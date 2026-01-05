@@ -11,7 +11,7 @@ http://localhost:8000
 
 ### Login Credentials
 ```
-Username: admin
+Email:    admin@perfanalysis.com
 Password: admin123
 ```
 
@@ -33,7 +33,7 @@ http://localhost:8000
 ### 3. Log In
 
 You'll see a login page. Enter:
-- **Username**: `admin`
+- **Email**: `admin@perfanalysis.com`
 - **Password**: `admin123`
 
 ### 4. Explore the Portal
