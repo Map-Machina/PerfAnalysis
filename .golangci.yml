@@ -1,0 +1,93 @@
+# golangci-lint configuration for perfcollector2
+# See https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - errcheck      # Check for unchecked errors
+    - gosimple      # Simplify code
+    - govet         # Vet examines Go source code
+    - ineffassign   # Detect ineffectual assignments
+    - staticcheck   # Go static analysis
+    - unused        # Check for unused code
+    - gofmt         # Gofmt checks whether code was gofmt-ed
+    - goimports     # Check import statements are formatted
+    - misspell      # Spell checker
+    - revive        # Fast, configurable, extensible linter
+    - gosec         # Security problems
+    - bodyclose     # Check HTTP response body is closed
+    - errname       # Check error naming conventions
+    - exportloopref # Check for pointers to loop variables
+    - goconst       # Find repeated strings that could be constants
+    - gocritic      # Opinionated Go linter
+    - gocyclo       # Cyclomatic complexity
+    - goprintffuncname # Printf-like function naming
+    - nilerr        # Find code that returns nil even if it checks error
+    - nolintlint    # Ill-formed or insufficient nolint directives
+    - stylecheck    # Stylecheck is a replacement for golint
+    - unconvert     # Remove unnecessary type conversions
+    - unparam       # Find unused function parameters
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    check-shadowing: true
+    enable-all: true
+
+  gocyclo:
+    min-complexity: 15
+
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+
+  revive:
+    rules:
+      - name: exported
+        severity: warning
+        disabled: false
+      - name: unexported-return
+        severity: warning
+        disabled: false
+      - name: error-return
+        severity: warning
+        disabled: false
+      - name: error-naming
+        severity: warning
+        disabled: false
+
+  gosec:
+    severity: medium
+    confidence: medium
+    excludes:
+      - G104  # Audit errors not checked (covered by errcheck)
+
+issues:
+  exclude-rules:
+    # Exclude some linters from test files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - gosec
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true

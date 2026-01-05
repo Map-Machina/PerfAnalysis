@@ -1,0 +1,125 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run integration tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  integration-test:
+    name: Full Stack Integration Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build all services
+        run: docker-compose build
+
+      - name: Start all services
+        run: docker-compose up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker-compose exec -T postgres pg_isready -U perfadmin; do sleep 2; done'
+
+          echo "Waiting for XATbackend..."
+          timeout 60 bash -c 'until curl -f http://localhost:8000/health 2>/dev/null || true; do sleep 2; done'
+
+          echo "Waiting for pcd..."
+          timeout 60 bash -c 'until docker-compose ps pcd | grep -q "Up"; do sleep 2; done'
+
+      - name: Run Django migrations
+        run: docker-compose exec -T xatbackend python manage.py migrate --noinput
+
+      - name: Check service health
+        run: |
+          # Check PostgreSQL
+          docker-compose exec -T postgres pg_isready -U perfadmin
+
+          # Check containers are running
+          docker-compose ps
+
+          # Check pcd is listening
+          docker-compose exec -T pcd /app/bin/pcd --help
+
+      - name: Run integration tests
+        run: |
+          # Test data flow (placeholder - implement actual tests)
+          echo "Integration tests would run here"
+          # docker-compose exec -T xatbackend python manage.py test --tag=integration
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          mkdir -p logs
+          docker-compose logs postgres > logs/postgres.log
+          docker-compose logs xatbackend > logs/xatbackend.log
+          docker-compose logs pcd > logs/pcd.log
+          docker-compose logs r-dev > logs/r-dev.log
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: integration-test-logs
+          path: logs/
+          retention-days: 7
+
+      - name: Tear down services
+        if: always()
+        run: docker-compose down -v
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: moderate
+
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python', 'go' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2

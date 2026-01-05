@@ -1,0 +1,171 @@
+name: automated-Reporting CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'automated-Reporting/**'
+      - '.github/workflows/automated-reporting-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'automated-Reporting/**'
+      - '.github/workflows/automated-reporting-ci.yml'
+
+env:
+  R_VERSION: '4.5.2'
+
+jobs:
+  lint:
+    name: Lint R Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./automated-Reporting
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.R_VERSION }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            pandoc
+
+      - name: Query R package dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install R dependencies
+        run: |
+          install.packages(c('renv', 'lintr', 'devtools'))
+        shell: Rscript {0}
+
+      - name: Run lintr
+        run: |
+          lintr::lint_dir(".", linters = lintr::linters_with_defaults(
+            line_length_linter = lintr::line_length_linter(120),
+            object_name_linter = NULL
+          ))
+        shell: Rscript {0}
+
+  test:
+    name: Test R Code
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./automated-Reporting
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.R_VERSION }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            pandoc
+
+      - name: Query R package dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+        shell: Rscript {0}
+
+      - name: Cache R packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-r-${{ env.R_VERSION }}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-r-${{ env.R_VERSION }}-
+
+      - name: Install dependencies
+        run: |
+          install.packages('renv')
+          # Initialize renv
+          if (file.exists('renv_init.R')) {
+            source('renv_init.R')
+          }
+        shell: Rscript {0}
+
+      - name: Render R Markdown
+        run: |
+          if (file.exists('reporting.Rmd')) {
+            rmarkdown::render('reporting.Rmd', output_format = 'html_document')
+          }
+        shell: Rscript {0}
+
+      - name: Upload rendered report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: automated-Reporting/reporting.html
+          retention-days: 7
+
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./automated-Reporting
+          file: ./automated-Reporting/Dockerfile.dev
+          push: false
+          tags: perfanalysis-r-dev:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image
+        run: |
+          docker run --rm perfanalysis-r-dev:${{ github.sha }} R --version

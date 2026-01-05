@@ -1,0 +1,86 @@
+services:
+  # PostgreSQL Database for XATbackend
+  postgres:
+    image: postgres:12.2
+    container_name: perfanalysis-postgres
+    environment:
+      POSTGRES_DB: perfanalysis
+      POSTGRES_USER: perfadmin
+      POSTGRES_PASSWORD: devpassword123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U perfadmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # XATbackend Django Application
+  xatbackend:
+    build:
+      context: ./XATbackend
+      dockerfile: Dockerfile.dev
+    container_name: perfanalysis-xatbackend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./XATbackend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://perfadmin:devpassword123@postgres:5432/perfanalysis
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DJANGO_SETTINGS_MODULE=core.settings
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # perfcollector2 daemon (pcd)
+  pcd:
+    build:
+      context: ./perfcollector2
+      dockerfile: Dockerfile.dev
+    container_name: perfanalysis-pcd
+    command: /app/bin/pcd
+    volumes:
+      - pcd_data:/var/lib/pcd
+    ports:
+      - "8080:8080"
+    environment:
+      - PCD_LISTENADDRESS=0.0.0.0:8080
+      - PCD_HOME=/var/lib/pcd
+      - PCD_LOGLEVEL=DEBUG
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # R Development Environment
+  r-dev:
+    build:
+      context: ./automated-Reporting
+      dockerfile: Dockerfile.dev
+    container_name: perfanalysis-r-dev
+    volumes:
+      - ./automated-Reporting:/workspace
+    working_dir: /workspace
+    command: tail -f /dev/null  # Keep container running
+    environment:
+      - R_HOME=/usr/lib/R
+
+volumes:
+  postgres_data:
+  pcd_data:
+
+networks:
+  default:
+    name: perfanalysis-network
