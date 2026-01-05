@@ -10,3 +10,6 @@
 [submodule "automated-Reporting"]
 	path = automated-Reporting
 	url = https://github.com/businessperformancetuning/automated-Reporting.git
+[submodule "Dash003"]
+	path = Dash003
+	url = https://github.com/businessperformancetuning/Dash003.git
