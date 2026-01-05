@@ -1,0 +1,12 @@
+[submodule "claude-agents"]
+	path = claude-agents
+	url = https://github.com/businessperformancetuning/claude-agents.git
+[submodule "perfcollector2"]
+	path = perfcollector2
+	url = https://github.com/businessperformancetuning/perfcollector2.git
+[submodule "XATbackend"]
+	path = XATbackend
+	url = https://github.com/businessperformancetuning/XATbackend.git
+[submodule "automated-Reporting"]
+	path = automated-Reporting
+	url = https://github.com/businessperformancetuning/automated-Reporting.git

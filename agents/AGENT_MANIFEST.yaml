@@ -1,0 +1,786 @@
+# PerfAnalysis Agent Manifest
+# Comprehensive registry of all specialized Claude agents for the integrated ecosystem
+# Last Updated: 2026-01-04
+
+version: "1.0"
+project: "PerfAnalysis - Integrated Performance Monitoring Ecosystem"
+description: "Multi-component system integrating perfcollector2 (Go), XATbackend (Django), and automated-Reporting (R)"
+repository: "https://github.com/businessperformancetuning"
+total_agents: 16
+
+# =============================================================================
+# PROJECT STRUCTURE
+# =============================================================================
+
+components:
+  perfcollector2:
+    description: "Go-based performance data collection system"
+    technology_stack:
+      - Go 1.21+
+      - Linux /proc filesystem
+      - HTTP/REST API
+      - JSON/CSV data formats
+    primary_agents:
+      - go-backend-developer
+      - linux-systems-engineer
+      - configuration-management-specialist
+
+  XATbackend:
+    description: "Django-based multi-tenant user portal"
+    technology_stack:
+      - Django 3.2.3
+      - django-tenants 3.3.1
+      - PostgreSQL 12.2
+      - Python 3.x
+      - Azure App Service
+    primary_agents:
+      - backend-python-developer
+      - django-tenants-specialist
+      - security-architect
+      - devops-engineer
+
+  automated-Reporting:
+    description: "R-based visualization and reporting system"
+    technology_stack:
+      - R 4.5.2
+      - R Markdown
+      - ggplot2
+      - data.table
+      - Oracle 26ai (future)
+    primary_agents:
+      - r-performance-expert
+      - time-series-architect
+      - data-architect
+
+  integration:
+    description: "Cross-system integration and data flow"
+    primary_agents:
+      - integration-architect
+      - api-architect
+
+# =============================================================================
+# AGENT CATEGORIES
+# =============================================================================
+
+categories:
+  backend_development:
+    description: "Backend application development agents"
+    agents:
+      - id: go-backend-developer
+        file: backend/go-backend-developer.md
+        name: Go Backend Developer
+        component: perfcollector2
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Go 1.21+ programming
+          - HTTP server and client development
+          - /proc filesystem parsing
+          - Performance data collection
+          - JSON/CSV data processing
+          - Client-server architecture
+          - Concurrency with goroutines
+
+      - id: backend-python-developer
+        file: backend/backend-python-developer.md
+        name: Backend Python Developer
+        component: XATbackend
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Django 3.2.3 development
+          - Django ORM optimization
+          - REST API design
+          - Multi-tenant applications
+          - PostgreSQL integration
+          - Form validation
+          - OAuth/authentication
+
+      - id: django-tenants-specialist
+        file: backend/django-tenants-specialist.md
+        name: Django Tenants Specialist
+        component: XATbackend
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - django-tenants 3.3.1
+          - Schema-based multi-tenancy
+          - Tenant isolation
+          - Cross-tenant query prevention
+          - Multi-tenant migrations
+          - PostgreSQL schemas
+
+  operational:
+    description: "Operational and automation agents"
+    agents:
+      - id: linux-systems-engineer
+        file: operational/linux-systems-engineer.md
+        name: Linux Systems Engineer
+        component: perfcollector2
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - /proc filesystem expertise
+          - Device discovery automation
+          - Metric collection strategies
+          - sysstat tools
+          - Performance monitoring
+          - Counter rollover handling
+          - System-level debugging
+
+      - id: automation-engineer
+        file: operational/automation-engineer.md
+        name: Automation Engineer
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - CLI design and implementation
+          - Workflow orchestration
+          - Job scheduling
+          - Batch processing
+          - Error handling
+          - Retry logic
+          - Shell scripting
+
+      - id: configuration-management-specialist
+        file: operational/configuration-management-specialist.md
+        name: Configuration Management Specialist
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - YAML/JSON configuration
+          - Secrets management
+          - Environment variables
+          - Configuration versioning
+          - Machine inventory
+          - Config file abstraction
+
+      - id: data-quality-engineer
+        file: operational/data-quality-engineer.md
+        name: Data Quality Engineer
+        component: all
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Data validation
+          - Quality metrics
+          - Error detection
+          - Missing data handling
+          - Input validation
+          - Data sanity checks
+
+  performance:
+    description: "Performance optimization agents"
+    agents:
+      - id: r-performance-expert
+        file: performance/r-performance-expert.md
+        name: R Performance Expert
+        component: automated-Reporting
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - R code optimization
+          - Vectorization techniques
+          - data.table operations
+          - R Markdown optimization
+          - Visualization performance
+          - Memory management in R
+          - Profiling and benchmarking
+
+  database:
+    description: "Database and data architecture agents"
+    agents:
+      - id: data-architect
+        file: database/data-architect.md
+        name: Data Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Database schema design
+          - Time-series data modeling
+          - Partitioning strategies
+          - Index optimization
+          - Query performance
+          - Data normalization
+          - ETL processes
+
+      - id: time-series-architect
+        file: database/time-series-architect.md
+        name: Time-Series Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Time-series database design
+          - Metric aggregation strategies
+          - Data retention policies
+          - Partitioning by time
+          - Monitoring system architecture
+          - Performance metrics storage
+          - Multi-level aggregation
+
+      - id: agent-oracle-developer
+        file: database/agent-oracle-developer.md
+        name: Oracle Developer
+        component: automated-Reporting
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - PL/SQL development
+          - Oracle 26ai features
+          - Stored procedures
+          - Vector search (future)
+          - Oracle performance tuning
+          - Bulk operations
+
+  architecture:
+    description: "System architecture and design agents"
+    agents:
+      - id: integration-architect
+        file: integration/integration-architect.md
+        name: Integration Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Multi-system integration
+          - Data pipeline design
+          - API contract definition
+          - End-to-end data flow
+          - Error handling strategies
+          - Authentication flows
+          - Cross-component orchestration
+
+      - id: api-architect
+        file: architecture/api-architect.md
+        name: API Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - REST API design
+          - API versioning
+          - Endpoint structure
+          - Request/response formats
+          - Integration patterns
+          - API documentation
+          - Microservices communication
+
+      - id: security-architect
+        file: architecture/security-architect.md
+        name: Security Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Grep", "Glob"]
+        expertise:
+          - OWASP Top 10
+          - Authentication/Authorization
+          - API key management
+          - Multi-tenant security
+          - Input validation
+          - Encryption
+          - Rate limiting
+
+      - id: solutions-architect-sais
+        file: architecture/solutions-architect-sais.md
+        name: Solutions Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - System architecture
+          - Cloud deployment (Azure)
+          - Scalability patterns
+          - High availability
+          - Disaster recovery
+          - Multi-region deployment
+          - Performance optimization
+
+      - id: devops-engineer
+        file: architecture/devops-engineer.md
+        name: DevOps Engineer
+        component: XATbackend
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Docker containerization
+          - Azure App Service
+          - GitHub Actions CI/CD
+          - Deployment automation
+          - Infrastructure as Code
+          - Monitoring setup
+          - Incident response
+
+# =============================================================================
+# ROUTING RULES
+# =============================================================================
+
+routing:
+  keywords:
+    # perfcollector2
+    go: go-backend-developer
+    golang: go-backend-developer
+    proc: linux-systems-engineer
+    trickle: go-backend-developer
+    pcc: go-backend-developer
+    pcd: go-backend-developer
+
+    # XATbackend
+    django: backend-python-developer
+    python: backend-python-developer
+    tenant: django-tenants-specialist
+    multi-tenant: django-tenants-specialist
+    postgresql: data-architect
+
+    # automated-Reporting
+    r: r-performance-expert
+    rmarkdown: r-performance-expert
+    ggplot: r-performance-expert
+    visualization: r-performance-expert
+
+    # Integration
+    integration: integration-architect
+    upload: integration-architect
+    api: api-architect
+    endpoint: api-architect
+
+    # Database
+    database: data-architect
+    schema: data-architect
+    time-series: time-series-architect
+    oracle: agent-oracle-developer
+
+    # Security
+    security: security-architect
+    authentication: security-architect
+    authorization: security-architect
+    apikey: security-architect
+
+    # Operations
+    automation: automation-engineer
+    config: configuration-management-specialist
+    validation: data-quality-engineer
+    quality: data-quality-engineer
+
+    # Infrastructure
+    deployment: devops-engineer
+    docker: devops-engineer
+    azure: devops-engineer
+    cicd: devops-engineer
+
+  fallback: integration-architect
+
+# =============================================================================
+# COLLABORATION MATRIX
+# =============================================================================
+
+collaboration:
+  end_to_end_integration:
+    description: "Complete data flow from collection to visualization"
+    primary: integration-architect
+    supporting:
+      - go-backend-developer
+      - backend-python-developer
+      - r-performance-expert
+    review: security-architect
+
+  perfcollector2_development:
+    description: "Go-based data collection system"
+    primary: go-backend-developer
+    supporting:
+      - linux-systems-engineer
+      - configuration-management-specialist
+      - data-quality-engineer
+    review: integration-architect
+
+  xatbackend_development:
+    description: "Django portal development"
+    primary: backend-python-developer
+    supporting:
+      - django-tenants-specialist
+      - security-architect
+      - data-architect
+    review: devops-engineer
+
+  reporting_development:
+    description: "R visualization and analysis"
+    primary: r-performance-expert
+    supporting:
+      - data-architect
+      - time-series-architect
+    review: integration-architect
+
+  api_design:
+    description: "REST API development across systems"
+    primary: api-architect
+    supporting:
+      - go-backend-developer
+      - backend-python-developer
+      - security-architect
+    review: integration-architect
+
+  database_design:
+    description: "Database schema and optimization"
+    primary: data-architect
+    supporting:
+      - time-series-architect
+      - agent-oracle-developer
+    review: solutions-architect-sais
+
+  security_implementation:
+    description: "Security across all components"
+    primary: security-architect
+    supporting:
+      - backend-python-developer
+      - go-backend-developer
+      - devops-engineer
+    review: solutions-architect-sais
+
+  deployment:
+    description: "System deployment and operations"
+    primary: devops-engineer
+    supporting:
+      - automation-engineer
+      - configuration-management-specialist
+    review: solutions-architect-sais
+
+# =============================================================================
+# DATA FLOW AGENTS
+# =============================================================================
+
+data_flow:
+  stage_1_collection:
+    description: "Linux /proc metrics collection"
+    agents:
+      - linux-systems-engineer (metric identification)
+      - go-backend-developer (pcc implementation)
+      - data-quality-engineer (validation)
+    output: "JSON/CSV files with performance metrics"
+
+  stage_2_upload:
+    description: "Upload to XATbackend portal"
+    agents:
+      - go-backend-developer (upload client)
+      - backend-python-developer (upload endpoint)
+      - integration-architect (API contract)
+      - security-architect (authentication)
+    output: "Data stored in PostgreSQL with tenant isolation"
+
+  stage_3_storage:
+    description: "Multi-tenant data storage"
+    agents:
+      - django-tenants-specialist (schema isolation)
+      - data-architect (schema design)
+      - time-series-architect (partitioning)
+    output: "Queryable performance database"
+
+  stage_4_export:
+    description: "Data export for reporting"
+    agents:
+      - backend-python-developer (export API)
+      - integration-architect (format specification)
+    output: "CSV files for R consumption"
+
+  stage_5_visualization:
+    description: "R-based report generation"
+    agents:
+      - r-performance-expert (chart generation)
+      - data-architect (data transformation)
+    output: "HTML/PDF performance reports"
+
+# =============================================================================
+# COMMON TASKS ROUTING
+# =============================================================================
+
+common_tasks:
+  - task: "Add new /proc metric parser"
+    primary_agent: linux-systems-engineer
+    supporting_agents: [go-backend-developer, data-quality-engineer]
+    example: "As the Linux Systems Engineer, help me parse /proc/vmstat for swap metrics."
+
+  - task: "Implement CSV upload to XATbackend"
+    primary_agent: integration-architect
+    supporting_agents: [go-backend-developer, backend-python-developer, security-architect]
+    example: "As the Integration Architect, design the upload workflow from perfcollector2 to XATbackend."
+
+  - task: "Optimize R report generation"
+    primary_agent: r-performance-expert
+    supporting_agents: [data-architect]
+    example: "As the R Performance Expert, optimize this slow data.frame operation in reporting.Rmd."
+
+  - task: "Design multi-tenant database schema"
+    primary_agent: django-tenants-specialist
+    supporting_agents: [data-architect, time-series-architect, security-architect]
+    example: "As the Django Tenants Specialist, design the schema for storing performance data with tenant isolation."
+
+  - task: "Implement API authentication"
+    primary_agent: security-architect
+    supporting_agents: [go-backend-developer, backend-python-developer]
+    example: "As the Security Architect, implement Bearer token authentication for the upload API."
+
+  - task: "Set up automated data collection"
+    primary_agent: automation-engineer
+    supporting_agents: [go-backend-developer, configuration-management-specialist]
+    example: "As the Automation Engineer, create a systemd service for continuous performance collection."
+
+  - task: "Deploy to production"
+    primary_agent: devops-engineer
+    supporting_agents: [solutions-architect-sais, security-architect]
+    example: "As the DevOps Engineer, deploy XATbackend to Azure App Service with proper security."
+
+  - task: "Troubleshoot data flow issues"
+    primary_agent: integration-architect
+    supporting_agents: [go-backend-developer, backend-python-developer]
+    example: "As the Integration Architect, debug why CSV uploads are failing."
+
+  - task: "Design time-series schema"
+    primary_agent: time-series-architect
+    supporting_agents: [data-architect, agent-oracle-developer]
+    example: "As the Time-Series Architect, design partitioning strategy for 1-second granularity metrics."
+
+  - task: "Implement data validation"
+    primary_agent: data-quality-engineer
+    supporting_agents: [go-backend-developer, backend-python-developer]
+    example: "As the Data Quality Engineer, add validation for uploaded CSV files."
+
+# =============================================================================
+# SYSTEM INTEGRATION SCENARIOS
+# =============================================================================
+
+integration_scenarios:
+  scenario_1:
+    name: "Initial Setup - End-to-End"
+    description: "Set up complete PerfAnalysis ecosystem from scratch"
+    steps:
+      - step: 1
+        description: "Install and configure perfcollector2"
+        agent: go-backend-developer
+      - step: 2
+        description: "Deploy XATbackend to Azure"
+        agent: devops-engineer
+      - step: 3
+        description: "Configure multi-tenancy"
+        agent: django-tenants-specialist
+      - step: 4
+        description: "Set up API authentication"
+        agent: security-architect
+      - step: 5
+        description: "Configure data upload pipeline"
+        agent: integration-architect
+      - step: 6
+        description: "Set up automated-Reporting"
+        agent: r-performance-expert
+      - step: 7
+        description: "Test end-to-end data flow"
+        agent: integration-architect
+
+  scenario_2:
+    name: "Add New Machine to Monitoring"
+    description: "Onboard a new Linux server for performance monitoring"
+    steps:
+      - step: 1
+        description: "Install pcc on target server"
+        agent: linux-systems-engineer
+      - step: 2
+        description: "Configure data collection parameters"
+        agent: configuration-management-specialist
+      - step: 3
+        description: "Generate API key for machine"
+        agent: security-architect
+      - step: 4
+        description: "Register machine in XATbackend"
+        agent: backend-python-developer
+      - step: 5
+        description: "Test data collection and upload"
+        agent: integration-architect
+
+  scenario_3:
+    name: "Generate Performance Report"
+    description: "Create performance analysis report for a machine"
+    steps:
+      - step: 1
+        description: "Export data from XATbackend"
+        agent: backend-python-developer
+      - step: 2
+        description: "Validate data quality"
+        agent: data-quality-engineer
+      - step: 3
+        description: "Generate R Markdown report"
+        agent: r-performance-expert
+      - step: 4
+        description: "Publish to portal"
+        agent: integration-architect
+
+  scenario_4:
+    name: "Scale to Multi-Region"
+    description: "Deploy PerfAnalysis across multiple regions"
+    steps:
+      - step: 1
+        description: "Design multi-region architecture"
+        agent: solutions-architect-sais
+      - step: 2
+        description: "Set up regional pcd servers"
+        agent: devops-engineer
+      - step: 3
+        description: "Configure database replication"
+        agent: data-architect
+      - step: 4
+        description: "Implement geo-routing"
+        agent: integration-architect
+
+# =============================================================================
+# TECHNOLOGY STACK EXPERTISE
+# =============================================================================
+
+technology_expertise:
+  languages:
+    go:
+      agents: [go-backend-developer]
+      version: "1.21+"
+    python:
+      agents: [backend-python-developer, django-tenants-specialist]
+      version: "3.x"
+    r:
+      agents: [r-performance-expert]
+      version: "4.5.2"
+    sql:
+      agents: [data-architect, time-series-architect, agent-oracle-developer]
+      versions: ["PostgreSQL 12.2", "Oracle 26ai"]
+
+  frameworks:
+    django:
+      agents: [backend-python-developer, django-tenants-specialist]
+      version: "3.2.3"
+    django-tenants:
+      agents: [django-tenants-specialist]
+      version: "3.3.1"
+    rmarkdown:
+      agents: [r-performance-expert]
+
+  databases:
+    postgresql:
+      agents: [data-architect, django-tenants-specialist, backend-python-developer]
+      version: "12.2"
+    oracle:
+      agents: [agent-oracle-developer, data-architect, time-series-architect]
+      version: "26ai Free"
+
+  cloud:
+    azure:
+      agents: [devops-engineer, solutions-architect-sais]
+      services: ["App Service", "PostgreSQL Flexible Server", "Key Vault"]
+
+  tools:
+    docker:
+      agents: [devops-engineer]
+    git:
+      agents: [devops-engineer, automation-engineer]
+    github_actions:
+      agents: [devops-engineer]
+
+# =============================================================================
+# VERSION HISTORY
+# =============================================================================
+
+changelog:
+  - version: "1.0"
+    date: "2026-01-04"
+    changes:
+      - Initial manifest creation
+      - Added 16 agents across 6 categories
+      - Defined 3-component integration architecture
+      - Created routing rules and collaboration matrix
+      - Documented data flow across system
+      - Added integration scenarios
+
+# =============================================================================
+# AGENT FILE STRUCTURE
+# =============================================================================
+
+file_structure: |
+  agents/
+  ├── AGENT_MANIFEST.yaml          # This file
+  ├── 00-AGENT_DIRECTORY.md        # Quick reference index
+  ├── architecture/
+  │   ├── api-architect.md
+  │   ├── devops-engineer.md
+  │   ├── security-architect.md
+  │   └── solutions-architect-sais.md
+  ├── backend/
+  │   ├── backend-python-developer.md
+  │   ├── django-tenants-specialist.md
+  │   └── go-backend-developer.md
+  ├── database/
+  │   ├── agent-oracle-developer.md
+  │   ├── data-architect.md
+  │   └── time-series-architect.md
+  ├── integration/
+  │   └── integration-architect.md
+  ├── operational/
+  │   ├── automation-engineer.md
+  │   ├── configuration-management-specialist.md
+  │   ├── data-quality-engineer.md
+  │   └── linux-systems-engineer.md
+  └── performance/
+      └── r-performance-expert.md
+
+# =============================================================================
+# USAGE NOTES
+# =============================================================================
+
+usage:
+  consulting: |
+    Address agents by their role:
+    "As the [Agent Name], help me [specific task]."
+
+    Examples:
+    - "As the Integration Architect, design the upload workflow."
+    - "As the Go Backend Developer, implement /proc/loadavg parsing."
+    - "As the Django Tenants Specialist, fix this cross-tenant query leak."
+
+  collaboration: |
+    Request multi-agent collaboration for complex tasks:
+    "[Agent 1] and [Agent 2]: [collaborative task]."
+
+    Example:
+    "Integration Architect and Security Architect: Design the authenticated
+     upload API between perfcollector2 and XATbackend."
+
+  routing: |
+    Keyword-based routing will automatically select the appropriate agent.
+    The manifest routing rules map keywords to agents for quick consultation.
