@@ -3,6 +3,9 @@
 # Sysbench + PCC Benchmark Orchestration Script
 # Runs pcc collection and sysbench benchmark simultaneously on both Azure VMs
 # Total runtime: ~70 minutes (pcc) with ~60 minutes (sysbench)
+#
+# SYNCHRONIZATION: This script ensures both VMs start sysbench at the same time
+# by first starting pcc on both, then starting sysbench simultaneously.
 
 set -e
 
@@ -42,39 +45,65 @@ print_info() {
     echo -e "${BLUE}[INFO] $1${NC}"
 }
 
-# Function to run benchmark on a single VM
-run_vm_benchmark() {
+print_error() {
+    echo -e "${RED}[ERROR] $1${NC}"
+}
+
+# Function to start pcc on a VM
+start_pcc() {
     local vm_name=$1
     local vm_ip=$2
     local vm_user=$3
-    local result_dir="${RESULTS_DIR}/${vm_name}"
 
-    print_header "Starting benchmark on ${vm_name} (${vm_ip})"
+    print_status "Starting pcc on ${vm_name}..."
 
     # Create remote working directory
     ssh ${vm_user}@${vm_ip} "mkdir -p ~/benchmark_results"
 
-    # Start pcc in background (70 minutes, JSON output)
-    # pcc uses environment variables: PCC_DURATION, PCC_FREQUENCY, PCC_COLLECTION, PCC_MODE, PCC_APIKEY
-    print_status "Starting pcc collection on ${vm_name} (${PCC_DURATION} duration)..."
+    # Start pcc in background
     ssh ${vm_user}@${vm_ip} "nohup env PCC_APIKEY=benchmark PCC_MODE=local PCC_DURATION=${PCC_DURATION} PCC_FREQUENCY=${PCC_FREQUENCY} PCC_COLLECTION=~/benchmark_results/pcc_collection_${TIMESTAMP}.json pcc > ~/benchmark_results/pcc_${TIMESTAMP}.log 2>&1 &"
 
-    # Give pcc a moment to start
-    sleep 5
-
     # Verify pcc is running
+    sleep 3
     if ssh ${vm_user}@${vm_ip} "pgrep -x pcc > /dev/null"; then
         print_info "pcc is running on ${vm_name}"
+        return 0
     else
-        echo -e "${RED}ERROR: pcc failed to start on ${vm_name}${NC}"
+        print_error "pcc failed to start on ${vm_name}"
         return 1
     fi
+}
 
-    # Start sysbench benchmark (runs for ~60 minutes)
-    print_status "Starting sysbench benchmark on ${vm_name}..."
-    ssh ${vm_user}@${vm_ip} "cd ~/benchmark_results && ~/sysbench_azure_vm_benchmark.sh" &
+# Function to start sysbench on a VM (runs in foreground of SSH, but we background the SSH)
+start_sysbench() {
+    local vm_name=$1
+    local vm_ip=$2
+    local vm_user=$3
 
-    echo $!  # Return the background job PID
+    print_info "Starting sysbench on ${vm_name}..."
+    ssh ${vm_user}@${vm_ip} "cd ~/benchmark_results && nohup ~/sysbench_azure_vm_benchmark.sh > sysbench_${TIMESTAMP}.log 2>&1 &"
+}
+
+# Function to verify sysbench is running
+verify_sysbench() {
+    local vm_name=$1
+    local vm_ip=$2
+    local vm_user=$3
+    local max_retries=5
+    local retry=0
+
+    while [ $retry -lt $max_retries ]; do
+        sleep 2
+        if ssh ${vm_user}@${vm_ip} "pgrep -f sysbench > /dev/null 2>&1"; then
+            print_info "sysbench confirmed running on ${vm_name}"
+            return 0
+        fi
+        retry=$((retry + 1))
+        print_info "Waiting for sysbench to start on ${vm_name} (attempt ${retry}/${max_retries})..."
+    done
+
+    print_error "sysbench failed to start on ${vm_name}"
+    return 1
 }
 
 # Function to wait for VM benchmark completion and collect results
@@ -86,7 +115,7 @@ collect_results() {
 
     print_header "Collecting results from ${vm_name}"
 
-    # Wait for pcc to finish (check if process is still running)
+    # Wait for pcc to finish
     print_status "Waiting for pcc to complete on ${vm_name}..."
     while ssh ${vm_user}@${vm_ip} "pgrep -x pcc > /dev/null 2>&1"; do
         sleep 30
@@ -95,11 +124,22 @@ collect_results() {
 
     print_info "pcc completed on ${vm_name}"
 
-    # Copy results back
+    # Copy results back - handle files individually to avoid glob issues
     print_status "Copying results from ${vm_name}..."
-    scp ${vm_user}@${vm_ip}:~/benchmark_results/*.json "${result_dir}/" 2>/dev/null || true
-    scp ${vm_user}@${vm_ip}:~/benchmark_results/*.txt "${result_dir}/" 2>/dev/null || true
-    scp ${vm_user}@${vm_ip}:~/benchmark_results/*.log "${result_dir}/" 2>/dev/null || true
+
+    # Get list of files and copy each
+    for ext in json log txt; do
+        ssh ${vm_user}@${vm_ip} "ls ~/benchmark_results/*.${ext} 2>/dev/null" | while read -r filepath; do
+            filename=$(basename "$filepath")
+            scp "${vm_user}@${vm_ip}:${filepath}" "${result_dir}/${filename}" 2>/dev/null || true
+        done
+    done
+
+    # Also check nested benchmark_results directory
+    ssh ${vm_user}@${vm_ip} "ls ~/benchmark_results/benchmark_results/*.txt 2>/dev/null" | while read -r filepath; do
+        filename=$(basename "$filepath")
+        scp "${vm_user}@${vm_ip}:${filepath}" "${result_dir}/${filename}" 2>/dev/null || true
+    done
 
     print_info "Results saved to ${result_dir}"
 }
@@ -116,33 +156,98 @@ main() {
     echo "  - ${VM2_NAME} (${VM2_IP})"
     echo ""
 
-    # Verify connectivity
+    # Verify connectivity to both VMs first
     print_status "Verifying SSH connectivity..."
-    ssh -o ConnectTimeout=10 ${VM1_USER}@${VM1_IP} "echo 'Connected to ${VM1_NAME}'" || { echo -e "${RED}Cannot connect to ${VM1_NAME}${NC}"; exit 1; }
-    ssh -o ConnectTimeout=10 ${VM2_USER}@${VM2_IP} "echo 'Connected to ${VM2_NAME}'" || { echo -e "${RED}Cannot connect to ${VM2_NAME}${NC}"; exit 1; }
+    if ! ssh -o ConnectTimeout=10 -o BatchMode=yes ${VM1_USER}@${VM1_IP} "echo 'Connected'" > /dev/null 2>&1; then
+        print_error "Cannot connect to ${VM1_NAME} (${VM1_IP})"
+        exit 1
+    fi
+    print_info "Connected to ${VM1_NAME}"
 
-    # Create result directories with timestamp
+    if ! ssh -o ConnectTimeout=10 -o BatchMode=yes ${VM2_USER}@${VM2_IP} "echo 'Connected'" > /dev/null 2>&1; then
+        print_error "Cannot connect to ${VM2_NAME} (${VM2_IP})"
+        exit 1
+    fi
+    print_info "Connected to ${VM2_NAME}"
+
+    # Create result directories
     mkdir -p "${RESULTS_DIR}/${VM1_NAME}"
     mkdir -p "${RESULTS_DIR}/${VM2_NAME}"
 
-    # Start benchmarks on both VMs simultaneously
-    print_header "Starting benchmarks on both VMs simultaneously"
-
     START_TIME=$(date +%s)
 
-    # Run both VMs in parallel
-    run_vm_benchmark "${VM1_NAME}" "${VM1_IP}" "${VM1_USER}" &
+    # PHASE 1: Start pcc on both VMs
+    print_header "Phase 1: Starting PCC collection on both VMs"
+
+    start_pcc "${VM1_NAME}" "${VM1_IP}" "${VM1_USER}" || exit 1
+    start_pcc "${VM2_NAME}" "${VM2_IP}" "${VM2_USER}" || exit 1
+
+    print_info "PCC running on both VMs"
+
+    # PHASE 2: Start sysbench on both VMs SIMULTANEOUSLY
+    print_header "Phase 2: Starting sysbench on both VMs simultaneously"
+
+    # Calculate a synchronized start time (10 seconds from now)
+    SYNC_TIME=$(($(date +%s) + 10))
+    print_info "Synchronized start time: $(date -r ${SYNC_TIME} '+%Y-%m-%d %H:%M:%S')"
+
+    # Deploy synchronized start command to both VMs
+    # The VMs will wait until SYNC_TIME before starting sysbench
+    ssh ${VM1_USER}@${VM1_IP} "while [ \$(date +%s) -lt ${SYNC_TIME} ]; do sleep 0.5; done; cd ~/benchmark_results && nohup ~/sysbench_azure_vm_benchmark.sh > sysbench_${TIMESTAMP}.log 2>&1 &" &
     PID1=$!
 
-    run_vm_benchmark "${VM2_NAME}" "${VM2_IP}" "${VM2_USER}" &
+    ssh ${VM2_USER}@${VM2_IP} "while [ \$(date +%s) -lt ${SYNC_TIME} ]; do sleep 0.5; done; cd ~/benchmark_results && nohup ~/sysbench_azure_vm_benchmark.sh > sysbench_${TIMESTAMP}.log 2>&1 &" &
     PID2=$!
 
-    # Wait for sysbench to complete on both (background ssh processes)
-    print_status "Waiting for sysbench benchmarks to complete (~60 minutes)..."
+    # Wait for SSH commands to complete (they start nohup and exit quickly)
     wait $PID1 2>/dev/null || true
     wait $PID2 2>/dev/null || true
 
-    print_info "Sysbench benchmarks completed. Waiting for pcc collection to finish..."
+    # Give sysbench a moment to start, then verify
+    sleep 5
+
+    # Verify sysbench is running on both
+    print_status "Verifying sysbench is running on both VMs..."
+
+    SYSBENCH_OK=true
+    if ! verify_sysbench "${VM1_NAME}" "${VM1_IP}" "${VM1_USER}"; then
+        SYSBENCH_OK=false
+    fi
+    if ! verify_sysbench "${VM2_NAME}" "${VM2_IP}" "${VM2_USER}"; then
+        SYSBENCH_OK=false
+    fi
+
+    if [ "$SYSBENCH_OK" = false ]; then
+        print_error "Sysbench failed to start on one or more VMs"
+        print_status "Check logs on VMs: ~/benchmark_results/sysbench_${TIMESTAMP}.log"
+        exit 1
+    fi
+
+    print_header "Benchmarks Running"
+    echo "Both pcc and sysbench are now running on both VMs."
+    echo ""
+    echo "Expected completion times:"
+    echo "  Sysbench: ~60 minutes"
+    echo "  PCC:      ~70 minutes"
+    echo ""
+    print_status "Waiting for benchmarks to complete..."
+
+    # Wait for sysbench to finish (check every 60 seconds)
+    while true; do
+        VM1_SYSBENCH=$(ssh ${VM1_USER}@${VM1_IP} "pgrep -f sysbench_azure > /dev/null 2>&1 && echo 'running' || echo 'done'")
+        VM2_SYSBENCH=$(ssh ${VM2_USER}@${VM2_IP} "pgrep -f sysbench_azure > /dev/null 2>&1 && echo 'running' || echo 'done'")
+
+        if [ "$VM1_SYSBENCH" = "done" ] && [ "$VM2_SYSBENCH" = "done" ]; then
+            print_info "Sysbench completed on both VMs"
+            break
+        fi
+
+        ELAPSED=$(($(date +%s) - START_TIME))
+        print_info "Sysbench running... (${VM1_NAME}: ${VM1_SYSBENCH}, ${VM2_NAME}: ${VM2_SYSBENCH}) - Elapsed: $((ELAPSED / 60))m"
+        sleep 60
+    done
+
+    print_info "Waiting for pcc to finish collecting data..."
 
     # Collect results from both VMs
     collect_results "${VM1_NAME}" "${VM1_IP}" "${VM1_USER}"
@@ -158,8 +263,10 @@ main() {
     echo "  - ${RESULTS_DIR}/${VM1_NAME}/"
     echo "  - ${RESULTS_DIR}/${VM2_NAME}/"
     echo ""
-    ls -la "${RESULTS_DIR}/${VM1_NAME}/" 2>/dev/null || echo "  (no files yet)"
-    ls -la "${RESULTS_DIR}/${VM2_NAME}/" 2>/dev/null || echo "  (no files yet)"
+    echo "Files:"
+    ls -la "${RESULTS_DIR}/${VM1_NAME}/" 2>/dev/null || echo "  (no files)"
+    echo ""
+    ls -la "${RESULTS_DIR}/${VM2_NAME}/" 2>/dev/null || echo "  (no files)"
 }
 
 # Run main function
