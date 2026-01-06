@@ -1,0 +1,12 @@
+2026-01-06 19:30:08 INFO pcc pcc.go:280 Performance Collector Clientv1.0.0-dev+5feb563a3 (pcc, go1.25.5 linux/amd64)
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_APIKEY    : benchmark
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_COLLECTION: /home/azureuser/benchmark_results/pcc_collection_20260106_133004.json
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_DURATION  : 70m
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_FREQUENCY : 5s
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_IDENTIFIER: d2da98c4b4f5454cbdb311f4701ad1a1
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_LOGLEVEL  : pcc=INFO;hoarder=INFO
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_MODE      : local
+2026-01-06 19:30:08 INFO pcc pcc.go:284 PCC_SERVER_URL: http://localhost:8080
+2026-01-06 20:40:08 INFO hoarder hoarder.go:260 hoarder service shutting down
+2026-01-06 20:40:08 INFO hoarder hoarder.go:262 hoarder service clean shutdown
+hoarder service terminated: pcc collection complete
