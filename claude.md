@@ -2830,6 +2830,131 @@ explaining:
 
 ---
 
+## CRITICAL DEBUGGING PROTOCOLS
+
+These protocols are **MANDATORY** for all agents when debugging web application issues. Failure to follow these protocols has historically resulted in repeated failed fixes and wasted user time.
+
+### Protocol 1: Django Template Inheritance Audit
+
+**WHEN**: Any `NoReverseMatch`, `TemplateSyntaxError`, or template-related Django error
+
+**THE RULE**: When a template error occurs, search ALL templates for the same pattern before making any fix.
+
+**MANDATORY STEPS**:
+1. Identify the error pattern (e.g., `{% url 'dashboard:...' %}`)
+2. Run codebase-wide search BEFORE any edits:
+   ```bash
+   grep -r "{% url 'NAMESPACE:" --include="*.html" XATbackend/
+   ```
+3. List ALL files containing the pattern
+4. Fix ALL occurrences in a single pass
+5. Never claim a fix is complete until all instances are addressed
+
+**WHY**: Django templates extend (`{% extends %}`) and include (`{% include %}`) other templates. A fix in one template is NEVER complete without auditing the entire template tree.
+
+**EXAMPLE**:
+```
+❌ WRONG: Fix only the file mentioned in the traceback
+✅ CORRECT: Search entire codebase, list all affected files, fix all at once
+```
+
+---
+
+### Protocol 2: Browser Verification Requirement
+
+**WHEN**: Any web UI fix, template change, or frontend modification
+
+**THE RULE**: HTTP 200 response ≠ working page. A fix is NOT verified until actual browser rendering is confirmed.
+
+**MANDATORY STEPS**:
+1. After making changes, do NOT rely solely on HTTP status codes
+2. HTTP 200 means Django returned *something*, not that it rendered correctly
+3. Verify fix by one of:
+   - User confirmation that page works
+   - Browser developer tools console check (no errors)
+   - Actual page content inspection
+4. Never claim "fix successful" based only on server logs showing 200
+
+**WHY**: Django can return HTTP 200 with an error page, partial render, or template exception displayed to the user.
+
+**EXAMPLE**:
+```
+❌ WRONG: "Docker logs show 200 6885, fix is successful"
+✅ CORRECT: "Please verify the page loads correctly in your browser"
+```
+
+---
+
+### Protocol 3: Atomic Fix Completion
+
+**WHEN**: Fixing any pattern-based issue in code or templates
+
+**THE RULE**: When fixing a pattern in a file, fix ALL instances in that file before moving to the next step.
+
+**MANDATORY STEPS**:
+1. After identifying a pattern to fix in a file, count all instances
+2. Use search within the file to find every occurrence
+3. Fix ALL instances in that file in one editing session
+4. Never leave a file in a partially-fixed state
+5. Verify the count of fixes matches the count of occurrences
+
+**WHY**: Partial fixes create confusing states where some functionality works and some doesn't, making debugging harder.
+
+**EXAMPLE**:
+```
+❌ WRONG: Fix one URL in home.html, move on, fix another when error appears
+✅ CORRECT: Search home.html for all {% url 'dashboard:' %}, fix all 5 at once
+```
+
+---
+
+### Protocol 4: Pattern-Based Bug Hunting
+
+**WHEN**: Any bug caused by a repeated pattern (URL namespaces, import statements, configuration values, etc.)
+
+**THE RULE**: When a bug is caused by a pattern, the FIRST action must be a codebase-wide search. Define fix scope BEFORE any edits.
+
+**MANDATORY STEPS**:
+1. Identify the problematic pattern from the error
+2. IMMEDIATELY run codebase-wide search:
+   ```bash
+   grep -r "PATTERN" --include="*.EXT" .
+   ```
+3. Document ALL files and line counts that need changes
+4. Create a fix plan listing every change needed
+5. Execute fixes systematically
+6. Verify each file is fully fixed before moving to next
+
+**WHY**: Reactive fixing (fix one, wait for error, fix next) wastes time and frustrates users. Proactive pattern hunting solves the entire problem class at once.
+
+**EXAMPLE**:
+```
+❌ WRONG:
+  Error in sidenav.html → fix sidenav.html
+  Error persists → check home.html → fix home.html
+  Error persists → check base.html → fix base.html
+
+✅ CORRECT:
+  Error mentions {% url 'dashboard:' %}
+  → grep -r "{% url 'dashboard:" --include="*.html" .
+  → Found in: sidenav.html (1), home.html (5), base.html (2)
+  → Fix all 8 occurrences across 3 files
+  → Verify with user
+```
+
+---
+
+### Protocol Summary Table
+
+| Protocol | Trigger | First Action | Verification |
+|----------|---------|--------------|--------------|
+| Template Audit | Template error | `grep -r` all templates | All files listed and fixed |
+| Browser Verify | Any UI fix | Request browser check | User confirms page works |
+| Atomic Fix | Pattern in file | Count all instances | Fix count = instance count |
+| Pattern Hunt | Pattern-based bug | Codebase-wide search | All files fixed in one pass |
+
+---
+
 ## Troubleshooting Guide
 
 ### Problem: "Data is collected but not in the database"

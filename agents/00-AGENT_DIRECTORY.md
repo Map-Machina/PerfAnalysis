@@ -1,8 +1,8 @@
 # PerfAnalysis Agent Directory
 
-**Version**: 1.0
-**Last Updated**: 2026-01-04
-**Total Agents**: 16
+**Version**: 1.1
+**Last Updated**: 2026-01-05
+**Total Agents**: 17
 **Project**: PerfAnalysis - Integrated Performance Monitoring Ecosystem
 
 ---
@@ -23,12 +23,20 @@ This directory provides a quick index of all available agents for the PerfAnalys
 ┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
 │ perfcollector2  │────────▶│   XATbackend    │────────▶│   automated-    │
 │   (Go-based)    │         │ (Django Portal) │         │   Reporting     │
-│                 │         │                 │         │   (R-based)     │
-│ DATA COLLECTION │         │ USER PORTAL     │         │ VISUALIZATION   │
+│                 │         │  + Dashboard    │         │   (R-based)     │
+│ DATA COLLECTION │         │ USER PORTAL     │         │ PDF REPORTS     │
 └─────────────────┘         └─────────────────┘         └─────────────────┘
+                                    │
+                                    ▼
+                            ┌─────────────────┐
+                            │   Interactive   │
+                            │   Dashboard     │
+                            │  (Plotly.js)    │
+                            │ VISUALIZATION   │
+                            └─────────────────┘
 ```
 
-**Data Flow**: Linux /proc → perfcollector2 → XATbackend → automated-Reporting
+**Data Flow**: Linux /proc → perfcollector2 → XATbackend → Dashboard/automated-Reporting
 
 ---
 
@@ -42,38 +50,44 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | 2 | **Backend Python Developer** | XATbackend | Django 3.2.3, REST APIs, ORM optimization, multi-tenant apps | [`backend/backend-python-developer.md`](backend/backend-python-developer.md) |
 | 3 | **Django Tenants Specialist** | XATbackend | django-tenants 3.3.1, schema isolation, tenant security | [`backend/django-tenants-specialist.md`](backend/django-tenants-specialist.md) |
 
+### 🎨 Frontend Development (1 agent)
+
+| # | Agent | Component | Key Expertise | File |
+|---|-------|-----------|---------------|------|
+| 4 | **Frontend Developer** | XATbackend Dashboard | JavaScript, Plotly.js, DataTables, WebSockets, responsive design | [`frontend/frontend-developer.md`](frontend/frontend-developer.md) |
+
 ### 🔄 Operational & Automation (4 agents)
 
 | # | Agent | Component | Key Expertise | File |
 |---|-------|-----------|---------------|------|
-| 4 | **Linux Systems Engineer** | perfcollector2 | /proc filesystem, device discovery, sysstat, metric collection | [`operational/linux-systems-engineer.md`](operational/linux-systems-engineer.md) |
-| 5 | **Automation Engineer** | All | CLI design, workflow orchestration, job scheduling, batch processing | [`operational/automation-engineer.md`](operational/automation-engineer.md) |
-| 6 | **Configuration Management Specialist** | All | YAML/JSON configs, secrets management, environment variables | [`operational/configuration-management-specialist.md`](operational/configuration-management-specialist.md) |
-| 7 | **Data Quality Engineer** | All | Data validation, quality metrics, error detection, input validation | [`operational/data-quality-engineer.md`](operational/data-quality-engineer.md) |
+| 5 | **Linux Systems Engineer** | perfcollector2 | /proc filesystem, device discovery, sysstat, metric collection | [`operational/linux-systems-engineer.md`](operational/linux-systems-engineer.md) |
+| 6 | **Automation Engineer** | All | CLI design, workflow orchestration, job scheduling, batch processing | [`operational/automation-engineer.md`](operational/automation-engineer.md) |
+| 7 | **Configuration Management Specialist** | All | YAML/JSON configs, secrets management, environment variables | [`operational/configuration-management-specialist.md`](operational/configuration-management-specialist.md) |
+| 8 | **Data Quality Engineer** | All | Data validation, quality metrics, error detection, input validation | [`operational/data-quality-engineer.md`](operational/data-quality-engineer.md) |
 
 ### 🚀 Performance (1 agent)
 
 | # | Agent | Component | Key Expertise | File |
 |---|-------|-----------|---------------|------|
-| 8 | **R Performance Expert** | automated-Reporting | R optimization, vectorization, data.table, R Markdown, ggplot2 | [`performance/r-performance-expert.md`](performance/r-performance-expert.md) |
+| 9 | **R Performance Expert** | automated-Reporting | R optimization, vectorization, data.table, R Markdown, ggplot2 | [`performance/r-performance-expert.md`](performance/r-performance-expert.md) |
 
 ### 💾 Database & Data Architecture (3 agents)
 
 | # | Agent | Component | Key Expertise | File |
 |---|-------|-----------|---------------|------|
-| 9 | **Data Architect** | All | Schema design, time-series modeling, partitioning, query optimization | [`database/data-architect.md`](database/data-architect.md) |
-| 10 | **Time-Series Architect** | All | Metric aggregation, retention policies, monitoring systems, partitioning | [`database/time-series-architect.md`](database/time-series-architect.md) |
-| 11 | **Oracle Developer** | automated-Reporting | PL/SQL, Oracle 26ai, stored procedures, vector search (future) | [`database/agent-oracle-developer.md`](database/agent-oracle-developer.md) |
+| 10 | **Data Architect** | All | Schema design, time-series modeling, partitioning, query optimization | [`database/data-architect.md`](database/data-architect.md) |
+| 11 | **Time-Series Architect** | All | Metric aggregation, retention policies, monitoring systems, partitioning | [`database/time-series-architect.md`](database/time-series-architect.md) |
+| 12 | **Oracle Developer** | automated-Reporting | PL/SQL, Oracle 26ai, stored procedures, vector search (future) | [`database/agent-oracle-developer.md`](database/agent-oracle-developer.md) |
 
 ### 🏗️ Architecture & Infrastructure (5 agents)
 
 | # | Agent | Component | Key Expertise | File |
 |---|-------|-----------|---------------|------|
-| 12 | **Integration Architect** | All | Multi-system integration, data pipelines, API contracts, end-to-end flow | [`integration/integration-architect.md`](integration/integration-architect.md) |
-| 13 | **API Architect** | All | REST API design, versioning, endpoint structure, integration patterns | [`architecture/api-architect.md`](architecture/api-architect.md) |
-| 14 | **Security Architect** | All | OWASP Top 10, authentication, API keys, multi-tenant security, encryption | [`architecture/security-architect.md`](architecture/security-architect.md) |
-| 15 | **Solutions Architect** | All | System architecture, Azure deployment, scalability, HA/DR, multi-region | [`architecture/solutions-architect-sais.md`](architecture/solutions-architect-sais.md) |
-| 16 | **DevOps Engineer** | XATbackend | Docker, Azure App Service, GitHub Actions, CI/CD, monitoring | [`architecture/devops-engineer.md`](architecture/devops-engineer.md) |
+| 13 | **Integration Architect** | All | Multi-system integration, data pipelines, API contracts, end-to-end flow | [`integration/integration-architect.md`](integration/integration-architect.md) |
+| 14 | **API Architect** | All | REST API design, versioning, endpoint structure, integration patterns | [`architecture/api-architect.md`](architecture/api-architect.md) |
+| 15 | **Security Architect** | All | OWASP Top 10, authentication, API keys, multi-tenant security, encryption | [`architecture/security-architect.md`](architecture/security-architect.md) |
+| 16 | **Solutions Architect** | All | System architecture, Azure deployment, scalability, HA/DR, multi-region | [`architecture/solutions-architect-sais.md`](architecture/solutions-architect-sais.md) |
+| 17 | **DevOps Engineer** | XATbackend | Docker, Azure App Service, GitHub Actions, CI/CD, monitoring | [`architecture/devops-engineer.md`](architecture/devops-engineer.md) |
 
 ---
 
@@ -93,12 +107,13 @@ This directory provides a quick index of all available agents for the PerfAnalys
 
 ### XATbackend Agents
 
-**Primary Responsibility**: Multi-tenant user portal for data storage and management
+**Primary Responsibility**: Multi-tenant user portal for data storage, management, and interactive dashboards
 
 | Agent | Role |
 |-------|------|
-| Backend Python Developer | Django application development |
+| Backend Python Developer | Django application development, REST APIs |
 | Django Tenants Specialist | Multi-tenancy implementation |
+| **Frontend Developer** | Interactive dashboards with Plotly.js |
 | Security Architect | Authentication, authorization |
 | DevOps Engineer | Azure deployment, CI/CD |
 | Data Architect | Database schema design |
@@ -139,6 +154,9 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | **Go** | Go Backend Developer |
 | **Python/Django** | Backend Python Developer |
 | **django-tenants** | Django Tenants Specialist |
+| **JavaScript/Plotly.js** | Frontend Developer |
+| **DataTables.js** | Frontend Developer |
+| **WebSockets** | Frontend Developer, Backend Python Developer |
 | **R/R Markdown** | R Performance Expert |
 | **PostgreSQL** | Data Architect, Django Tenants Specialist |
 | **Oracle** | Oracle Developer, Data Architect |
@@ -153,6 +171,8 @@ This directory provides a quick index of all available agents for the PerfAnalys
 |------|---------------|-------------------|
 | **Add new metric to perfcollector2** | Linux Systems Engineer | Go Backend Developer, Data Quality Engineer |
 | **Implement upload endpoint** | Integration Architect | Backend Python Developer, Security Architect |
+| **Build interactive dashboard** | Frontend Developer | Backend Python Developer, API Architect |
+| **Create dashboard REST API** | Backend Python Developer | API Architect, Frontend Developer |
 | **Optimize R report** | R Performance Expert | Data Architect |
 | **Design database schema** | Data Architect | Time-Series Architect, Django Tenants Specialist |
 | **Set up authentication** | Security Architect | Backend Python Developer, Go Backend Developer |
@@ -169,6 +189,8 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | **Upload failures** | Integration Architect, Backend Python Developer |
 | **Cross-tenant data leak** | Django Tenants Specialist, Security Architect |
 | **Slow R reports** | R Performance Expert, Data Architect |
+| **Dashboard not loading** | Frontend Developer, Backend Python Developer |
+| **Chart rendering issues** | Frontend Developer |
 | **Database performance** | Data Architect, Time-Series Architect |
 | **API design** | API Architect, Integration Architect |
 | **Security vulnerability** | Security Architect |
