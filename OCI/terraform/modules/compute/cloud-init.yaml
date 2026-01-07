@@ -1,18 +1,42 @@
 #cloud-config
 # Cloud-init configuration for PerfAnalysis performance testing VMs
-# Minimal config to avoid OOM on small instances
-# Installs sysbench only - Go and perfcollector2 installed manually
+# SIMPLIFIED: Minimal boot config - software installed post-boot via SSH
+#
+# Lessons learned from 2026-01-07 deployment:
+# 1. DNF package operations require 1.5GB+ peak memory
+# 2. Cloud-init users: block interferes with opc SSH key provisioning
+# 3. Complex cloud-init causes boot failures on constrained instances
+#
+# Strategy: Boot minimal, install software via SSH after instance is accessible
 
-# CRITICAL: Disable package operations to avoid OOM on 2GB instances
+# Disable package operations during boot to avoid OOM
 package_update: false
 package_upgrade: false
 
-# IMPORTANT: Do not use 'users' block - it can prevent the default opc user
-# from getting its SSH keys. Create additional users in runcmd instead.
-# The opc user is automatically created by the OCI image with SSH keys
-# from instance metadata.
+# IMPORTANT: Do NOT use 'users' block - it prevents opc SSH key provisioning
+# The opc user is automatically created by OCI with SSH keys from metadata
+
+# Add swap space for memory buffer during package operations
+bootcmd:
+  - |
+    if [ ! -f /swapfile ]; then
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      swapon /swapfile
+      echo '/swapfile none swap sw 0 0' >> /etc/fstab
+      echo "Swap space created: 2GB"
+    fi
 
 write_files:
+  # Marker file to indicate cloud-init phases
+  - path: /var/log/cloud-init-perftest.log
+    content: |
+      PerfTest Cloud-Init Log
+      ========================
+    permissions: '0644'
+
+  # Go environment setup (for when Go is installed post-boot)
   - path: /etc/profile.d/go.sh
     content: |
       export PATH=$PATH:/usr/local/go/bin
@@ -20,26 +44,25 @@ write_files:
       export PATH=$PATH:$GOPATH/bin
     permissions: '0644'
 
-  # Note: Files for pcc user written without owner - ownership fixed in runcmd after user creation
-  - path: /home/pcc/.pcc_env
+  # PCC environment configuration template
+  - path: /tmp/pcc_env_template
     content: |
       # PCC Environment Configuration
-      # Edit these values for your environment
       export PCC_MODE=local
       export PCC_DURATION=15m
       export PCC_FREQUENCY=5s
       export PCC_COLLECTION=/home/pcc/collections/pcc_$(date +%Y%m%d_%H%M%S).json
-      # For trickle mode to XATbackend, uncomment and configure:
+      # For trickle mode to XATbackend:
       # export PCC_MODE=trickle
       # export PCC_APIKEY=your_api_key_here
       # export PCC_SERVER=your_xatbackend_url:port
     permissions: '0644'
 
-  - path: /home/pcc/run_benchmark.sh
+  # Benchmark script template (will be copied to pcc home after user creation)
+  - path: /tmp/run_benchmark.sh
     content: |
       #!/bin/bash
       # Synchronized benchmark script for OCI VMs
-
       set -e
 
       TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -48,14 +71,18 @@ write_files:
 
       echo "Starting benchmark at $TIMESTAMP"
 
-      # Start pcc collection in background
-      source /home/pcc/.pcc_env
-      export PCC_COLLECTION=$RESULTS_DIR/pcc_collection.json
-      /home/pcc/perfcollector2/bin/pcc &
-      PCC_PID=$!
-
-      # Wait for pcc to initialize
-      sleep 5
+      # Check if pcc is available
+      if [ -x /home/pcc/perfcollector2/bin/pcc ]; then
+        # Start pcc collection in background
+        source /home/pcc/.pcc_env
+        export PCC_COLLECTION=$RESULTS_DIR/pcc_collection.json
+        /home/pcc/perfcollector2/bin/pcc &
+        PCC_PID=$!
+        sleep 5
+      else
+        echo "WARNING: pcc not found, running benchmark without collection"
+        PCC_PID=""
+      fi
 
       # Run sysbench CPU test
       echo "Running sysbench CPU test..."
@@ -65,26 +92,58 @@ write_files:
       echo "Running sysbench memory test..."
       sysbench memory --threads=1 --time=300 run > $RESULTS_DIR/sysbench_memory.log 2>&1
 
-      # Wait for pcc to complete
-      wait $PCC_PID
+      # Stop pcc if running
+      if [ -n "$PCC_PID" ]; then
+        kill $PCC_PID 2>/dev/null || true
+        wait $PCC_PID 2>/dev/null || true
 
-      # Process collection to CSV
-      /home/pcc/perfcollector2/bin/pcprocess -collection $RESULTS_DIR/pcc_collection.json -outdir $RESULTS_DIR/
+        # Process collection to CSV if pcprocess is available
+        if [ -x /home/pcc/perfcollector2/bin/pcprocess ]; then
+          /home/pcc/perfcollector2/bin/pcprocess -collection $RESULTS_DIR/pcc_collection.json -outdir $RESULTS_DIR/
+        fi
+      fi
 
       echo "Benchmark complete. Results in $RESULTS_DIR"
     permissions: '0755'
 
 runcmd:
-  # Create pcc user (doing this in runcmd to avoid interfering with opc SSH keys)
+  # Log start time
+  - echo "$(date): Cloud-init runcmd started" >> /var/log/cloud-init-perftest.log
+
+  # Verify swap is active
+  - echo "$(date): Swap status - $(swapon --show)" >> /var/log/cloud-init-perftest.log
+
+  # Create pcc user (in runcmd to avoid interfering with opc SSH keys)
   - useradd -m -G wheel -s /bin/bash pcc || true
   - echo 'pcc ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/pcc
   - chmod 440 /etc/sudoers.d/pcc
+
+  # Setup pcc user's SSH access (copy opc's keys)
   - mkdir -p /home/pcc/.ssh
   - cp /home/opc/.ssh/authorized_keys /home/pcc/.ssh/authorized_keys 2>/dev/null || true
+  - chmod 700 /home/pcc/.ssh
+  - chmod 600 /home/pcc/.ssh/authorized_keys 2>/dev/null || true
+
+  # Copy config templates to pcc home
+  - cp /tmp/pcc_env_template /home/pcc/.pcc_env
+  - cp /tmp/run_benchmark.sh /home/pcc/run_benchmark.sh
+  - mkdir -p /home/pcc/collections /home/pcc/results
+
+  # Fix ownership
   - chown -R pcc:pcc /home/pcc
-  # Minimal setup - just install sysbench if not already installed
-  - dnf install -y sysbench 2>/dev/null || yum install -y sysbench 2>/dev/null || echo "sysbench install attempted"
+
+  # Log completion - DO NOT install packages during cloud-init
+  - echo "$(date): Cloud-init runcmd complete - ready for post-boot setup" >> /var/log/cloud-init-perftest.log
 
 final_message: |
-  PerfTest VM initialization complete after $UPTIME seconds.
-  sysbench should be available. Run: sysbench cpu run
+  =======================================================
+  PerfTest VM boot complete after $UPTIME seconds.
+
+  NEXT STEPS (run via SSH):
+  1. SSH to instance as opc user
+  2. Run: sudo dnf install -y sysbench
+  3. Optionally install Go and perfcollector2
+  4. Run benchmarks: sudo -u pcc /home/pcc/run_benchmark.sh
+
+  Check /var/log/cloud-init-perftest.log for boot details.
+  =======================================================
