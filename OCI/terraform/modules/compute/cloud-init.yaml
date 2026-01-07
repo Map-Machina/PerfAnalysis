@@ -1,0 +1,90 @@
+#cloud-config
+# Cloud-init configuration for PerfAnalysis performance testing VMs
+# Minimal config to avoid OOM on small instances
+# Installs sysbench only - Go and perfcollector2 installed manually
+
+# CRITICAL: Disable package operations to avoid OOM on 2GB instances
+package_update: false
+package_upgrade: false
+
+# IMPORTANT: Do not use 'users' block - it can prevent the default opc user
+# from getting its SSH keys. Create additional users in runcmd instead.
+# The opc user is automatically created by the OCI image with SSH keys
+# from instance metadata.
+
+write_files:
+  - path: /etc/profile.d/go.sh
+    content: |
+      export PATH=$PATH:/usr/local/go/bin
+      export GOPATH=/home/pcc/go
+      export PATH=$PATH:$GOPATH/bin
+    permissions: '0644'
+
+  # Note: Files for pcc user written without owner - ownership fixed in runcmd after user creation
+  - path: /home/pcc/.pcc_env
+    content: |
+      # PCC Environment Configuration
+      # Edit these values for your environment
+      export PCC_MODE=local
+      export PCC_DURATION=15m
+      export PCC_FREQUENCY=5s
+      export PCC_COLLECTION=/home/pcc/collections/pcc_$(date +%Y%m%d_%H%M%S).json
+      # For trickle mode to XATbackend, uncomment and configure:
+      # export PCC_MODE=trickle
+      # export PCC_APIKEY=your_api_key_here
+      # export PCC_SERVER=your_xatbackend_url:port
+    permissions: '0644'
+
+  - path: /home/pcc/run_benchmark.sh
+    content: |
+      #!/bin/bash
+      # Synchronized benchmark script for OCI VMs
+
+      set -e
+
+      TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+      RESULTS_DIR=/home/pcc/results/$TIMESTAMP
+      mkdir -p $RESULTS_DIR
+
+      echo "Starting benchmark at $TIMESTAMP"
+
+      # Start pcc collection in background
+      source /home/pcc/.pcc_env
+      export PCC_COLLECTION=$RESULTS_DIR/pcc_collection.json
+      /home/pcc/perfcollector2/bin/pcc &
+      PCC_PID=$!
+
+      # Wait for pcc to initialize
+      sleep 5
+
+      # Run sysbench CPU test
+      echo "Running sysbench CPU test..."
+      sysbench cpu --threads=1 --time=300 run > $RESULTS_DIR/sysbench_cpu.log 2>&1
+
+      # Run sysbench memory test
+      echo "Running sysbench memory test..."
+      sysbench memory --threads=1 --time=300 run > $RESULTS_DIR/sysbench_memory.log 2>&1
+
+      # Wait for pcc to complete
+      wait $PCC_PID
+
+      # Process collection to CSV
+      /home/pcc/perfcollector2/bin/pcprocess -collection $RESULTS_DIR/pcc_collection.json -outdir $RESULTS_DIR/
+
+      echo "Benchmark complete. Results in $RESULTS_DIR"
+    permissions: '0755'
+
+runcmd:
+  # Create pcc user (doing this in runcmd to avoid interfering with opc SSH keys)
+  - useradd -m -G wheel -s /bin/bash pcc || true
+  - echo 'pcc ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/pcc
+  - chmod 440 /etc/sudoers.d/pcc
+  - mkdir -p /home/pcc/.ssh
+  - cp /home/opc/.ssh/authorized_keys /home/pcc/.ssh/authorized_keys 2>/dev/null || true
+  - chown -R pcc:pcc /home/pcc
+  # Minimal setup - just install sysbench if not already installed
+  - dnf install -y sysbench 2>/dev/null || yum install -y sysbench 2>/dev/null || echo "sysbench install attempted"
+
+final_message: |
+  PerfTest VM initialization complete after $UPTIME seconds.
+  sysbench should be available. Run: sysbench cpu run

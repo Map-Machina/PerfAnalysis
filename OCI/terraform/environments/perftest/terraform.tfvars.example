@@ -1,0 +1,70 @@
+# PerfTest Environment - Terraform Variables
+# Copy this file to terraform.tfvars and fill in your values
+# DO NOT commit terraform.tfvars to version control
+
+# =============================================================================
+# OCI Provider Configuration (Required)
+# =============================================================================
+
+# Get these from OCI Console > Profile > User Settings > API Keys
+tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+user_ocid        = "ocid1.user.oc1..aaaaaaaaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+fingerprint      = "aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99"
+private_key_path = "~/.oci/oci_api_key.pem"
+
+# Choose a region with good Always Free availability
+# Recommended: us-ashburn-1, us-phoenix-1, uk-london-1
+region = "us-ashburn-1"
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+vcn_cidr            = "10.0.0.0/16"
+public_subnet_cidr  = "10.0.1.0/24"
+private_subnet_cidr = "10.0.10.0/24"
+
+# SECURITY: Replace with your IP address for SSH access
+# Find your IP: curl ifconfig.me
+admin_cidr = "YOUR_IP_ADDRESS/32"
+
+# =============================================================================
+# Compute Configuration (Free Tier)
+# =============================================================================
+
+# Number of VMs (2 recommended for comparative testing)
+instance_count = 2
+
+# Shape options:
+# - VM.Standard.A1.Flex: ARM-based, up to 4 OCPUs, 24GB RAM (free tier total)
+# - VM.Standard.E2.1.Micro: AMD-based, 1/8 OCPU, 1GB RAM (2 instances free)
+instance_shape = "VM.Standard.A1.Flex"
+
+# For A1.Flex shape (within 3000 OCPU-hours/month free tier)
+# 2 instances x 1 OCPU x 720 hours = 1440 OCPU-hours (well within limit)
+instance_ocpus     = 1
+instance_memory_gb = 6
+
+# Boot volume (up to 200GB total free tier)
+# 2 instances x 50GB = 100GB (within limit)
+boot_volume_size_gb = 50
+
+# =============================================================================
+# SSH Configuration
+# =============================================================================
+
+# Generate with: ssh-keygen -t ed25519 -C "oci-perftest"
+# Paste the contents of ~/.ssh/id_ed25519.pub (or your key)
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx user@host"
+
+# =============================================================================
+# Tags
+# =============================================================================
+
+common_tags = {
+  "ManagedBy"   = "Terraform"
+  "Project"     = "PerfAnalysis"
+  "Environment" = "PerfTest"
+  "CostCenter"  = "FreeTier"
+  "Owner"       = "your-email@example.com"
+}

@@ -1,0 +1,716 @@
+# OCI Performance Analysis Agent Manifest
+# Comprehensive registry of all specialized Claude agents for OCI-based performance analysis
+# Last Updated: 2026-01-06
+
+version: "1.0"
+project: "PerfAnalysis OCI - Oracle Cloud Infrastructure Performance Analysis"
+description: "Agent registry for OCI-based performance monitoring, integrating perfcollector2 (Go), XATbackend (Django), and automated-Reporting (R)"
+repository: "https://github.com/businessperformancetuning"
+total_agents: 19
+
+# =============================================================================
+# OCI PROJECT STRUCTURE
+# =============================================================================
+
+oci_structure:
+  terraform:
+    description: "Infrastructure as Code for OCI resources"
+    path: "../terraform/"
+    subdirs:
+      - modules
+      - environments
+  devops:
+    description: "OCI DevOps service configurations"
+    path: "../devops/"
+    subdirs:
+      - build_specs
+      - deployment_specs
+  monitoring:
+    description: "OCI monitoring and observability"
+    path: "../monitoring/"
+    subdirs:
+      - alarms
+      - dashboards
+  scripts:
+    description: "Utility scripts for OCI operations"
+    path: "../scripts/"
+  benchmarks:
+    description: "Benchmark configurations and results"
+    path: "../benchmarks/"
+    subdirs:
+      - configs
+      - results
+
+# =============================================================================
+# PERFANALYSIS COMPONENTS
+# =============================================================================
+
+components:
+  perfcollector2:
+    description: "Go-based performance data collection system"
+    language: "Go 1.21+"
+    repository: "perfcollector2"
+    binaries: ["pcc", "pcd", "pcprocess", "pcctl"]
+    oci_deployment: "OCI Compute instances"
+
+  xatbackend:
+    description: "Django multi-tenant web portal"
+    language: "Python 3.x"
+    framework: "Django 3.2.3"
+    repository: "XATbackend"
+    oci_deployment: "OKE or OCI Compute with Container Instances"
+
+  automated_reporting:
+    description: "R-based performance visualization"
+    language: "R 4.5.2+"
+    repository: "automated-Reporting"
+    oci_deployment: "OCI Compute or OCI Functions"
+
+# =============================================================================
+# AGENT DEFINITIONS
+# =============================================================================
+
+agents:
+  backend:
+    category: "Backend Development"
+    agents:
+      - id: go-backend-developer
+        file: backend/go-backend-developer.md
+        name: Go Backend Developer
+        component: perfcollector2
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Go programming (1.21+)
+          - HTTP client/server development
+          - /proc filesystem parsing
+          - JSON/CSV data serialization
+          - Concurrent programming
+          - Error handling patterns
+
+      - id: backend-python-developer
+        file: backend/backend-python-developer.md
+        name: Backend Python Developer
+        component: xatbackend
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Django 3.2.3 development
+          - REST API design
+          - Django ORM optimization
+          - PostgreSQL integration
+          - Async task processing
+
+      - id: django-tenants-specialist
+        file: backend/django-tenants-specialist.md
+        name: Django Tenants Specialist
+        component: xatbackend
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - django-tenants 3.3.1
+          - Schema-based multi-tenancy
+          - Tenant isolation and security
+          - Domain routing
+
+  frontend:
+    category: "Frontend Development"
+    agents:
+      - id: frontend-developer
+        file: frontend/frontend-developer.md
+        name: Frontend Developer
+        component: xatbackend
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - JavaScript ES6+
+          - Plotly.js charts
+          - DataTables.js
+          - Django templates
+          - AJAX/Fetch API
+
+  operational:
+    category: "Operational & Automation"
+    agents:
+      - id: linux-systems-engineer
+        file: operational/linux-systems-engineer.md
+        name: Linux Systems Engineer
+        component: perfcollector2
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - /proc filesystem internals
+          - System metrics and monitoring
+          - Device discovery
+          - Performance tuning
+          - OCI Linux instances
+
+      - id: automation-engineer
+        file: operational/automation-engineer.md
+        name: Automation Engineer
+        component: all
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - CLI design
+          - Workflow orchestration
+          - Job scheduling
+          - OCI automation scripts
+
+      - id: configuration-management-specialist
+        file: operational/configuration-management-specialist.md
+        name: Configuration Management Specialist
+        component: all
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - YAML/JSON configuration
+          - Environment variables
+          - Secrets management
+          - OCI configuration
+
+      - id: data-quality-engineer
+        file: operational/data-quality-engineer.md
+        name: Data Quality Engineer
+        component: all
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Data validation frameworks
+          - Quality metrics
+          - Anomaly detection
+
+  performance:
+    category: "Performance"
+    agents:
+      - id: r-performance-expert
+        file: performance/r-performance-expert.md
+        name: R Performance Expert
+        component: automated_reporting
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - R optimization
+          - data.table
+          - ggplot2
+          - R Markdown
+          - Profiling
+
+  database:
+    category: "Database & Data Architecture"
+    agents:
+      - id: data-architect
+        file: database/data-architect.md
+        name: Data Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Database schema design
+          - Time-series data modeling
+          - Query optimization
+          - OCI database services
+
+      - id: time-series-architect
+        file: database/time-series-architect.md
+        name: Time-Series Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: medium
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Time-series database design
+          - Metric aggregation
+          - Retention policies
+          - Partitioning strategies
+
+      - id: agent-oracle-developer
+        file: database/agent-oracle-developer.md
+        name: Oracle Developer
+        component: automated_reporting
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - PL/SQL programming
+          - Oracle 26ai features
+          - OCI Autonomous Database
+          - Stored procedures
+
+  architecture:
+    category: "Architecture & Infrastructure"
+    agents:
+      - id: integration-architect
+        file: integration/integration-architect.md
+        name: Integration Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Multi-system integration
+          - Data pipeline orchestration
+          - API contract design
+          - End-to-end data flow
+
+      - id: api-architect
+        file: architecture/api-architect.md
+        name: API Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - REST API design
+          - API versioning
+          - OpenAPI specification
+          - Rate limiting
+
+      - id: security-architect
+        file: architecture/security-architect.md
+        name: Security Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - OWASP Top 10
+          - Authentication/authorization
+          - OCI security services
+          - OCI Vault integration
+          - IAM policies
+
+      - id: solutions-architect-sais
+        file: architecture/solutions-architect-sais.md
+        name: Solutions Architect
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - System architecture
+          - Cloud deployment
+          - Scalability design
+          - HA/DR planning
+          - Multi-cloud strategies
+
+      - id: devops-engineer
+        file: architecture/devops-engineer.md
+        name: DevOps Engineer
+        component: xatbackend
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        expertise:
+          - Docker containerization
+          - CI/CD pipelines
+          - Deployment automation
+          - Monitoring setup
+
+      - id: oci-architect-professional
+        file: architecture/oci-architect-professional.md
+        name: OCI Architect Professional
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        certification: "Oracle Cloud Infrastructure 2025 Certified Architect Professional (1Z0-997-25)"
+        expertise:
+          - OCI compute, storage, networking, database services
+          - Enterprise-scale OCI solution design
+          - Multicloud and hybrid cloud architectures
+          - Security, observability, and automation at scale
+          - High availability and disaster recovery planning
+          - Workload migration and optimization
+          - IAM policies and compartment design
+          - VCN design and network segmentation
+
+      - id: oci-devops-professional
+        file: architecture/oci-devops-professional.md
+        name: OCI DevOps Professional
+        component: all
+        model: sonnet
+        status: active
+        priority: critical
+        tools: ["Read", "Write", "Grep", "Glob"]
+        certification: "Oracle Cloud Infrastructure 2025 Certified DevOps Professional (1Z0-1109-25)"
+        expertise:
+          - OCI DevOps service (build/deployment pipelines)
+          - Infrastructure as Code with Terraform
+          - OCI Resource Manager stacks
+          - Container orchestration with OKE
+          - Kubernetes deployments and Helm charts
+          - DevSecOps practices
+          - Deployment strategies (Canary, Blue-Green, Rolling)
+          - Ansible OCI Collection
+
+# =============================================================================
+# OCI ROUTING RULES
+# =============================================================================
+
+routing:
+  keywords:
+    # OCI Primary
+    oci: oci-architect-professional
+    oracle-cloud: oci-architect-professional
+    vcn: oci-architect-professional
+    compartment: oci-architect-professional
+    oke: oci-devops-professional
+    kubernetes: oci-devops-professional
+    terraform: oci-devops-professional
+    resource-manager: oci-devops-professional
+    devops-pipeline: oci-devops-professional
+    helm: oci-devops-professional
+    build-spec: oci-devops-professional
+    deployment-spec: oci-devops-professional
+
+    # OCI Services
+    compute: oci-architect-professional
+    object-storage: oci-architect-professional
+    block-volume: oci-architect-professional
+    load-balancer: oci-architect-professional
+    autonomous-database: agent-oracle-developer
+    vault: security-architect
+    iam: oci-architect-professional
+
+    # perfcollector2
+    go: go-backend-developer
+    pcc: go-backend-developer
+    proc: linux-systems-engineer
+
+    # XATbackend
+    django: backend-python-developer
+    tenant: django-tenants-specialist
+
+    # General
+    api: api-architect
+    security: security-architect
+    integration: integration-architect
+    quality: data-quality-engineer
+
+  fallback: integration-architect
+
+# =============================================================================
+# OCI COLLABORATION PATTERNS
+# =============================================================================
+
+collaboration:
+  oci_infrastructure:
+    description: "OCI infrastructure design and implementation"
+    primary: oci-architect-professional
+    supporting:
+      - security-architect
+      - solutions-architect-sais
+    review: integration-architect
+
+  oci_devops:
+    description: "OCI DevOps pipelines and Kubernetes deployments"
+    primary: oci-devops-professional
+    supporting:
+      - oci-architect-professional
+      - devops-engineer
+      - automation-engineer
+    review: security-architect
+
+  oci_migration:
+    description: "Workload migration to OCI"
+    primary: oci-architect-professional
+    supporting:
+      - oci-devops-professional
+      - data-architect
+      - devops-engineer
+    review: solutions-architect-sais
+
+  oci_security:
+    description: "OCI security architecture"
+    primary: security-architect
+    supporting:
+      - oci-architect-professional
+    review: integration-architect
+
+  perfcollector_oci:
+    description: "Deploy perfcollector2 on OCI compute"
+    primary: go-backend-developer
+    supporting:
+      - oci-architect-professional
+      - linux-systems-engineer
+    review: integration-architect
+
+  xatbackend_oke:
+    description: "Deploy XATbackend to OKE"
+    primary: backend-python-developer
+    supporting:
+      - oci-devops-professional
+      - django-tenants-specialist
+    review: security-architect
+
+# =============================================================================
+# OCI COMMON TASKS
+# =============================================================================
+
+common_tasks:
+  - task: "Design OCI architecture for PerfAnalysis"
+    primary_agent: oci-architect-professional
+    supporting_agents: [solutions-architect-sais, security-architect]
+    example: "As the OCI Architect Professional, design a multi-AD architecture for deploying the PerfAnalysis ecosystem on OCI."
+
+  - task: "Create Terraform modules for OCI"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional, automation-engineer]
+    example: "As the OCI DevOps Professional, create Terraform modules for VCN, compute, and OKE cluster."
+
+  - task: "Set up OCI DevOps build pipeline"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional, devops-engineer]
+    example: "As the OCI DevOps Professional, create a build_spec.yaml for the XATbackend container."
+
+  - task: "Deploy to OKE"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional, backend-python-developer]
+    example: "As the OCI DevOps Professional, create Helm charts and deployment specs for XATbackend on OKE."
+
+  - task: "Configure OCI monitoring"
+    primary_agent: oci-architect-professional
+    supporting_agents: [devops-engineer, automation-engineer]
+    example: "As the OCI Architect Professional, configure alarms and dashboards for monitoring PerfAnalysis on OCI."
+
+  - task: "Implement OCI IAM policies"
+    primary_agent: oci-architect-professional
+    supporting_agents: [security-architect]
+    example: "As the OCI Architect Professional, design compartment structure and IAM policies for PerfAnalysis deployment."
+
+  - task: "Deploy pcc to OCI compute instances"
+    primary_agent: go-backend-developer
+    supporting_agents: [oci-architect-professional, linux-systems-engineer]
+    example: "As the Go Backend Developer with OCI Architect Professional, deploy pcc binary to OCI compute instances for metric collection."
+
+  - task: "Migrate from Azure to OCI"
+    primary_agent: oci-architect-professional
+    supporting_agents: [oci-devops-professional, data-architect, devops-engineer]
+    example: "As the OCI Architect Professional, plan the migration of XATbackend from Azure App Service to OCI."
+
+  - task: "Set up OCI Vault for secrets"
+    primary_agent: security-architect
+    supporting_agents: [oci-architect-professional, configuration-management-specialist]
+    example: "As the Security Architect, configure OCI Vault for storing API keys and database credentials."
+
+  - task: "Create OCI benchmark automation"
+    primary_agent: automation-engineer
+    supporting_agents: [oci-architect-professional, linux-systems-engineer]
+    example: "As the Automation Engineer, create scripts for running sysbench benchmarks on OCI compute instances."
+
+# =============================================================================
+# OCI TECHNOLOGY EXPERTISE
+# =============================================================================
+
+technology_expertise:
+  oci_services:
+    compute:
+      agents: [oci-architect-professional, linux-systems-engineer]
+      services: ["Compute", "Instance Pools", "Autoscaling"]
+    networking:
+      agents: [oci-architect-professional, security-architect]
+      services: ["VCN", "Subnets", "Security Lists", "NSGs", "Load Balancer", "DRG"]
+    storage:
+      agents: [oci-architect-professional]
+      services: ["Block Volume", "Object Storage", "File Storage"]
+    database:
+      agents: [agent-oracle-developer, data-architect]
+      services: ["Autonomous Database", "DB Systems", "MySQL"]
+    containers:
+      agents: [oci-devops-professional]
+      services: ["OKE", "Container Registry", "Container Instances"]
+    devops:
+      agents: [oci-devops-professional]
+      services: ["DevOps Service", "Build Pipelines", "Deployment Pipelines"]
+    iac:
+      agents: [oci-devops-professional]
+      services: ["Resource Manager", "Terraform"]
+    security:
+      agents: [security-architect, oci-architect-professional]
+      services: ["IAM", "Vault", "Cloud Guard", "Security Zones", "WAF"]
+    monitoring:
+      agents: [oci-architect-professional, devops-engineer]
+      services: ["Monitoring", "Logging", "Notifications", "Events"]
+
+  languages:
+    go:
+      agents: [go-backend-developer]
+      version: "1.21+"
+    python:
+      agents: [backend-python-developer, django-tenants-specialist]
+      frameworks: ["Django 3.2.3", "django-tenants 3.3.1"]
+    r:
+      agents: [r-performance-expert]
+      version: "4.5.2+"
+    terraform:
+      agents: [oci-devops-professional]
+      provider: "OCI Provider"
+    yaml:
+      agents: [oci-devops-professional, configuration-management-specialist]
+      uses: ["build_spec.yaml", "deployment_spec.yaml", "Helm charts"]
+
+# =============================================================================
+# OCI DEPLOYMENT SCENARIOS
+# =============================================================================
+
+deployment_scenarios:
+  scenario_1:
+    name: "Full PerfAnalysis on OCI"
+    description: "Deploy complete PerfAnalysis ecosystem on OCI"
+    steps:
+      - agent: oci-architect-professional
+        task: "Design VCN, subnets, and security architecture"
+      - agent: oci-devops-professional
+        task: "Create Terraform modules for infrastructure"
+      - agent: oci-architect-professional
+        task: "Provision OCI compute instances for pcc"
+      - agent: oci-devops-professional
+        task: "Set up OKE cluster for XATbackend"
+      - agent: oci-devops-professional
+        task: "Create build and deployment pipelines"
+      - agent: security-architect
+        task: "Configure OCI Vault and IAM policies"
+      - agent: go-backend-developer
+        task: "Deploy pcc binary to compute instances"
+      - agent: backend-python-developer
+        task: "Deploy XATbackend to OKE"
+
+  scenario_2:
+    name: "OCI Benchmark Environment"
+    description: "Set up OCI compute instances for performance benchmarking"
+    steps:
+      - agent: oci-architect-professional
+        task: "Design compute instance specifications"
+      - agent: oci-devops-professional
+        task: "Create Terraform for benchmark VMs"
+      - agent: linux-systems-engineer
+        task: "Configure Linux for benchmarking"
+      - agent: automation-engineer
+        task: "Create benchmark automation scripts"
+      - agent: go-backend-developer
+        task: "Deploy pcc for metric collection"
+
+  scenario_3:
+    name: "Azure to OCI Migration"
+    description: "Migrate existing Azure deployment to OCI"
+    steps:
+      - agent: oci-architect-professional
+        task: "Assess current architecture and plan OCI equivalent"
+      - agent: data-architect
+        task: "Plan database migration strategy"
+      - agent: oci-devops-professional
+        task: "Create OCI infrastructure with Terraform"
+      - agent: oci-devops-professional
+        task: "Set up CI/CD pipelines in OCI DevOps"
+      - agent: backend-python-developer
+        task: "Update application configuration for OCI"
+      - agent: integration-architect
+        task: "Validate end-to-end data flow"
+
+# =============================================================================
+# FILE STRUCTURE
+# =============================================================================
+
+file_structure: |
+  OCI/agents/
+  ├── AGENT_MANIFEST.yaml              # This file
+  ├── 00-AGENT_DIRECTORY.md            # Quick reference index
+  ├── architecture/
+  │   ├── api-architect.md
+  │   ├── devops-engineer.md
+  │   ├── oci-architect-professional.md    # OCI 2025 Architect Professional
+  │   ├── oci-devops-professional.md       # OCI 2025 DevOps Professional
+  │   ├── security-architect.md
+  │   └── solutions-architect-sais.md
+  ├── backend/
+  │   ├── backend-python-developer.md
+  │   ├── django-tenants-specialist.md
+  │   └── go-backend-developer.md
+  ├── database/
+  │   ├── agent-oracle-developer.md
+  │   ├── data-architect.md
+  │   └── time-series-architect.md
+  ├── frontend/
+  │   └── frontend-developer.md
+  ├── integration/
+  │   └── integration-architect.md
+  ├── operational/
+  │   ├── automation-engineer.md
+  │   ├── configuration-management-specialist.md
+  │   ├── data-quality-engineer.md
+  │   └── linux-systems-engineer.md
+  └── performance/
+      └── r-performance-expert.md
+
+# =============================================================================
+# VERSION HISTORY
+# =============================================================================
+
+changelog:
+  - version: "1.0"
+    date: "2026-01-06"
+    changes:
+      - Initial OCI agent manifest creation
+      - Added all 19 agents from PerfAnalysis ecosystem
+      - Added OCI-specific routing rules
+      - Added OCI collaboration patterns
+      - Added OCI common tasks
+      - Added OCI technology expertise
+      - Added OCI deployment scenarios
+
+# =============================================================================
+# USAGE GUIDELINES
+# =============================================================================
+
+usage:
+  agent_invocation: |
+    Single agent:
+    "As the [Agent Name], [specific task with context]."
+
+    Example:
+    "As the OCI Architect Professional, design a VCN with public and private
+     subnets for deploying PerfAnalysis."
+
+  multi_agent: |
+    Multiple agents:
+    "[Agent 1] and [Agent 2]: [collaborative task]."
+
+    Example:
+    "OCI Architect Professional and OCI DevOps Professional: Design and
+     implement the infrastructure and CI/CD pipeline for deploying
+     XATbackend to OKE."
+
+  oci_specific: |
+    For OCI tasks, prefer OCI-certified agents:
+    - Infrastructure design: OCI Architect Professional
+    - DevOps and IaC: OCI DevOps Professional
+    - Security: Security Architect + OCI Architect Professional
