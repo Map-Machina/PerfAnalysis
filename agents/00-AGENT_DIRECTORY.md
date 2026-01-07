@@ -1,8 +1,8 @@
 # PerfAnalysis Agent Directory
 
-**Version**: 1.1
-**Last Updated**: 2026-01-05
-**Total Agents**: 17
+**Version**: 1.2
+**Last Updated**: 2026-01-06
+**Total Agents**: 19
 **Project**: PerfAnalysis - Integrated Performance Monitoring Ecosystem
 
 ---
@@ -79,7 +79,7 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | 11 | **Time-Series Architect** | All | Metric aggregation, retention policies, monitoring systems, partitioning | [`database/time-series-architect.md`](database/time-series-architect.md) |
 | 12 | **Oracle Developer** | automated-Reporting | PL/SQL, Oracle 26ai, stored procedures, vector search (future) | [`database/agent-oracle-developer.md`](database/agent-oracle-developer.md) |
 
-### 🏗️ Architecture & Infrastructure (5 agents)
+### 🏗️ Architecture & Infrastructure (7 agents)
 
 | # | Agent | Component | Key Expertise | File |
 |---|-------|-----------|---------------|------|
@@ -88,6 +88,8 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | 15 | **Security Architect** | All | OWASP Top 10, authentication, API keys, multi-tenant security, encryption | [`architecture/security-architect.md`](architecture/security-architect.md) |
 | 16 | **Solutions Architect** | All | System architecture, Azure deployment, scalability, HA/DR, multi-region | [`architecture/solutions-architect-sais.md`](architecture/solutions-architect-sais.md) |
 | 17 | **DevOps Engineer** | XATbackend | Docker, Azure App Service, GitHub Actions, CI/CD, monitoring | [`architecture/devops-engineer.md`](architecture/devops-engineer.md) |
+| 18 | **OCI Architect Professional** | All | OCI compute, storage, networking, database, security, multicloud/hybrid, migration | [`architecture/oci-architect-professional.md`](architecture/oci-architect-professional.md) |
+| 19 | **OCI DevOps Professional** | All | OCI DevOps service, Terraform, OKE, CI/CD pipelines, containerization, DevSecOps | [`architecture/oci-devops-professional.md`](architecture/oci-devops-professional.md) |
 
 ---
 
@@ -162,7 +164,10 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | **Oracle** | Oracle Developer, Data Architect |
 | **Linux /proc** | Linux Systems Engineer |
 | **Azure** | DevOps Engineer, Solutions Architect |
-| **Docker** | DevOps Engineer |
+| **OCI (Oracle Cloud)** | OCI Architect Professional, OCI DevOps Professional |
+| **Terraform/IaC** | OCI DevOps Professional, DevOps Engineer |
+| **Kubernetes/OKE** | OCI DevOps Professional |
+| **Docker** | DevOps Engineer, OCI DevOps Professional |
 | **REST API** | API Architect, Integration Architect |
 
 ### By Task Type
@@ -180,6 +185,10 @@ This directory provides a quick index of all available agents for the PerfAnalys
 | **Troubleshoot data flow** | Integration Architect | All component-specific agents |
 | **Configure automation** | Automation Engineer | Configuration Management Specialist |
 | **Validate data quality** | Data Quality Engineer | Component-specific agents |
+| **Design OCI architecture** | OCI Architect Professional | Solutions Architect, Security Architect |
+| **Set up OCI CI/CD pipeline** | OCI DevOps Professional | OCI Architect Professional |
+| **Deploy to OKE (Kubernetes)** | OCI DevOps Professional | OCI Architect Professional |
+| **Migrate workloads to OCI** | OCI Architect Professional | OCI DevOps Professional, Data Architect |
 
 ### By Problem Domain
 
@@ -438,6 +447,8 @@ agents/
 ├── architecture/
 │   ├── api-architect.md            # REST API design
 │   ├── devops-engineer.md          # Deployment & CI/CD
+│   ├── oci-architect-professional.md # OCI 2025 Architect Professional
+│   ├── oci-devops-professional.md  # OCI 2025 DevOps Professional
 │   ├── security-architect.md       # Security & authentication
 │   └── solutions-architect-sais.md # System architecture
 ├── backend/
@@ -466,6 +477,8 @@ agents/
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | 2026-01-04 | Initial directory created with 16 agents |
+| 1.1 | 2026-01-05 | Added Frontend Developer agent |
+| 1.2 | 2026-01-06 | Added OCI Architect Professional and OCI DevOps Professional agents |
 
 ---
 

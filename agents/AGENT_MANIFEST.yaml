@@ -1,12 +1,12 @@
 # PerfAnalysis Agent Manifest
 # Comprehensive registry of all specialized Claude agents for the integrated ecosystem
-# Last Updated: 2026-01-04
+# Last Updated: 2026-01-06
 
-version: "1.0"
+version: "1.2"
 project: "PerfAnalysis - Integrated Performance Monitoring Ecosystem"
 description: "Multi-component system integrating perfcollector2 (Go), XATbackend (Django), and automated-Reporting (R)"
 repository: "https://github.com/businessperformancetuning"
-total_agents: 16
+total_agents: 19
 
 # =============================================================================
 # PROJECT STRUCTURE
@@ -346,6 +346,44 @@ categories:
           - Monitoring setup
           - Incident response
 
+      - id: oci-architect-professional
+        file: architecture/oci-architect-professional.md
+        name: OCI Architect Professional
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        certification: "Oracle Cloud Infrastructure 2025 Certified Architect Professional (1Z0-997-25)"
+        expertise:
+          - OCI compute, storage, networking, database services
+          - Enterprise-scale OCI solution design
+          - Multicloud and hybrid cloud architectures
+          - Security, observability, and automation at scale
+          - High availability and disaster recovery planning
+          - Workload migration and optimization
+          - IAM policies and compartment design
+          - VCN design and network segmentation
+
+      - id: oci-devops-professional
+        file: architecture/oci-devops-professional.md
+        name: OCI DevOps Professional
+        component: all
+        model: sonnet
+        status: active
+        priority: high
+        tools: ["Read", "Write", "Grep", "Glob"]
+        certification: "Oracle Cloud Infrastructure 2025 Certified DevOps Professional (1Z0-1109-25)"
+        expertise:
+          - OCI DevOps service (build/deployment pipelines)
+          - Infrastructure as Code with Terraform
+          - OCI Resource Manager stacks
+          - Container orchestration with OKE
+          - Kubernetes deployments and Helm charts
+          - DevSecOps practices
+          - Deployment strategies (Canary, Blue-Green, Rolling)
+          - Ansible OCI Collection
+
 # =============================================================================
 # ROUTING RULES
 # =============================================================================
@@ -402,6 +440,18 @@ routing:
     docker: devops-engineer
     azure: devops-engineer
     cicd: devops-engineer
+
+    # OCI (Oracle Cloud Infrastructure)
+    oci: oci-architect-professional
+    oracle-cloud: oci-architect-professional
+    vcn: oci-architect-professional
+    compartment: oci-architect-professional
+    oke: oci-devops-professional
+    kubernetes: oci-devops-professional
+    terraform: oci-devops-professional
+    resource-manager: oci-devops-professional
+    devops-pipeline: oci-devops-professional
+    helm: oci-devops-professional
 
   fallback: integration-architect
 
@@ -478,6 +528,24 @@ collaboration:
       - automation-engineer
       - configuration-management-specialist
     review: solutions-architect-sais
+
+  oci_architecture:
+    description: "Oracle Cloud Infrastructure architecture and design"
+    primary: oci-architect-professional
+    supporting:
+      - security-architect
+      - data-architect
+      - solutions-architect-sais
+    review: integration-architect
+
+  oci_devops:
+    description: "OCI DevOps pipelines and Kubernetes deployments"
+    primary: oci-devops-professional
+    supporting:
+      - oci-architect-professional
+      - devops-engineer
+      - automation-engineer
+    review: security-architect
 
 # =============================================================================
 # DATA FLOW AGENTS
@@ -577,6 +645,31 @@ common_tasks:
     primary_agent: data-quality-engineer
     supporting_agents: [go-backend-developer, backend-python-developer]
     example: "As the Data Quality Engineer, add validation for uploaded CSV files."
+
+  - task: "Design OCI architecture"
+    primary_agent: oci-architect-professional
+    supporting_agents: [security-architect, data-architect]
+    example: "As the OCI Architect Professional, design a highly available architecture for deploying PerfAnalysis on OCI."
+
+  - task: "Set up OCI DevOps pipeline"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional, devops-engineer]
+    example: "As the OCI DevOps Professional, create a CI/CD pipeline using OCI DevOps service."
+
+  - task: "Deploy to OKE"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional]
+    example: "As the OCI DevOps Professional, deploy the XATbackend application to Oracle Container Engine for Kubernetes."
+
+  - task: "Migrate workloads to OCI"
+    primary_agent: oci-architect-professional
+    supporting_agents: [oci-devops-professional, data-architect, devops-engineer]
+    example: "As the OCI Architect Professional, plan the migration of our Azure-hosted application to OCI."
+
+  - task: "Implement OCI Infrastructure as Code"
+    primary_agent: oci-devops-professional
+    supporting_agents: [oci-architect-professional, automation-engineer]
+    example: "As the OCI DevOps Professional, create Terraform modules for our OCI infrastructure."
 
 # =============================================================================
 # SYSTEM INTEGRATION SCENARIOS
@@ -704,20 +797,43 @@ technology_expertise:
     azure:
       agents: [devops-engineer, solutions-architect-sais]
       services: ["App Service", "PostgreSQL Flexible Server", "Key Vault"]
+    oci:
+      agents: [oci-architect-professional, oci-devops-professional]
+      services: ["Compute", "OKE", "Object Storage", "Autonomous Database", "DevOps", "Resource Manager", "VCN", "Load Balancer"]
 
   tools:
     docker:
-      agents: [devops-engineer]
+      agents: [devops-engineer, oci-devops-professional]
     git:
       agents: [devops-engineer, automation-engineer]
     github_actions:
       agents: [devops-engineer]
+    terraform:
+      agents: [oci-devops-professional, devops-engineer]
+    helm:
+      agents: [oci-devops-professional]
+    ansible:
+      agents: [oci-devops-professional, automation-engineer]
 
 # =============================================================================
 # VERSION HISTORY
 # =============================================================================
 
 changelog:
+  - version: "1.2"
+    date: "2026-01-06"
+    changes:
+      - Added OCI Architect Professional agent (1Z0-997-25 certification)
+      - Added OCI DevOps Professional agent (1Z0-1109-25 certification)
+      - Added OCI routing keywords and collaboration patterns
+      - Added OCI common tasks and technology expertise
+      - Total agents now 19
+
+  - version: "1.1"
+    date: "2026-01-05"
+    changes:
+      - Added Frontend Developer agent
+
   - version: "1.0"
     date: "2026-01-04"
     changes:
@@ -739,6 +855,8 @@ file_structure: |
   ├── architecture/
   │   ├── api-architect.md
   │   ├── devops-engineer.md
+  │   ├── oci-architect-professional.md    # OCI 2025 Architect Professional
+  │   ├── oci-devops-professional.md       # OCI 2025 DevOps Professional
   │   ├── security-architect.md
   │   └── solutions-architect-sais.md
   ├── backend/
@@ -749,6 +867,8 @@ file_structure: |
   │   ├── agent-oracle-developer.md
   │   ├── data-architect.md
   │   └── time-series-architect.md
+  ├── frontend/
+  │   └── frontend-developer.md
   ├── integration/
   │   └── integration-architect.md
   ├── operational/

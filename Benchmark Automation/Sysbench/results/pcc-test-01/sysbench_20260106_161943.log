@@ -1,0 +1,512 @@
+
+[0;32m============================================[0m
+[0;32mAzure VM Benchmark Script[0m
+[0;32m============================================[0m
+Total estimated runtime: ~60 minutes
+Results will be saved to: ./benchmark_results/pcc-test-01_benchmark_20260106_222006.txt
+
+[0;32m============================================[0m
+[0;32mChecking Dependencies[0m
+[0;32m============================================[0m
+sysbench version: sysbench 1.0.20
+[0;32m============================================[0m
+[0;32mCollecting System Information[0m
+[0;32m============================================[0m
+========================================
+BENCHMARK RESULTS
+========================================
+
+Hostname: pcc-test-01
+Date: Tue Jan  6 22:20:06 UTC 2026
+Kernel: 6.8.0-1044-azure
+
+--- CPU Information ---
+Architecture:                         x86_64
+CPU(s):                               1
+Model name:                           Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
+Thread(s) per core:                   1
+Core(s) per socket:                   1
+Socket(s):                            1
+CPU max MHz:                          2300.0000
+
+--- Memory Information ---
+               total        used        free      shared  buff/cache   available
+Mem:           848Mi       227Mi       380Mi       3.0Mi       241Mi       470Mi
+Swap:             0B          0B          0B
+
+--- Disk Information ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        29G  2.0G   27G   7% /
+
+--- Azure VM Size (if available) ---
+Standard_B1s
+[0;32m============================================[0m
+[0;32mRunning CPU Benchmark (200s)[0m
+[0;32m============================================[0m
+[1;33m>>> Using 1 threads[0m
+
+========================================
+CPU BENCHMARK
+========================================
+Threads: 1
+Duration: 200s
+
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Prime numbers limit: 20000
+
+Initializing worker threads...
+
+Threads started!
+
+CPU speed:
+    events per second:   337.25
+
+General statistics:
+    total time:                          200.0019s
+    total number of events:              67451
+
+Latency (ms):
+         min:                                    2.11
+         avg:                                    2.96
+         max:                                   16.50
+         95th percentile:                        3.49
+         sum:                               199928.80
+
+Threads fairness:
+    events (avg/stddev):           67451.0000/0.00
+    execution time (avg/stddev):   199.9288/0.00
+
+[0;32m============================================[0m
+[0;32mRunning Memory Benchmark (200s)[0m
+[0;32m============================================[0m
+[1;33m>>> Using 1 threads[0m
+
+========================================
+MEMORY BENCHMARK
+========================================
+Threads: 1
+Duration: 200s
+Block size: 1K
+Total size: 100G
+
+--- Sequential Write ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Running memory speed test with the following options:
+  block size: 1KiB
+  total size: 102400MiB
+  operation: write
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 104857600 (4215987.12 per second)
+
+102400.00 MiB transferred (4117.17 MiB/sec)
+
+
+General statistics:
+    total time:                          24.8691s
+    total number of events:              104857600
+
+Latency (ms):
+         min:                                    0.00
+         avg:                                    0.00
+         max:                                    9.97
+         95th percentile:                        0.00
+         sum:                                10803.01
+
+Threads fairness:
+    events (avg/stddev):           104857600.0000/0.00
+    execution time (avg/stddev):   10.8030/0.00
+
+
+--- Sequential Read ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Running memory speed test with the following options:
+  block size: 1KiB
+  total size: 102400MiB
+  operation: read
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 104857600 (5160330.96 per second)
+
+102400.00 MiB transferred (5039.39 MiB/sec)
+
+
+General statistics:
+    total time:                          20.3173s
+    total number of events:              104857600
+
+Latency (ms):
+         min:                                    0.00
+         avg:                                    0.00
+         max:                                   10.09
+         95th percentile:                        0.00
+         sum:                                 6345.65
+
+Threads fairness:
+    events (avg/stddev):           104857600.0000/0.00
+    execution time (avg/stddev):   6.3456/0.00
+
+
+--- Random Write ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Running memory speed test with the following options:
+  block size: 1KiB
+  total size: 102400MiB
+  operation: write
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 66204681 (1324030.75 per second)
+
+64653.01 MiB transferred (1293.00 MiB/sec)
+
+
+General statistics:
+    total time:                          50.0001s
+    total number of events:              66204681
+
+Latency (ms):
+         min:                                    0.00
+         avg:                                    0.00
+         max:                                   11.05
+         95th percentile:                        0.00
+         sum:                                41102.57
+
+Threads fairness:
+    events (avg/stddev):           66204681.0000/0.00
+    execution time (avg/stddev):   41.1026/0.00
+
+
+--- Random Read ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Running memory speed test with the following options:
+  block size: 1KiB
+  total size: 102400MiB
+  operation: read
+  scope: global
+
+Initializing worker threads...
+
+Threads started!
+
+Total operations: 68044376 (1360827.14 per second)
+
+66449.59 MiB transferred (1328.93 MiB/sec)
+
+
+General statistics:
+    total time:                          50.0001s
+    total number of events:              68044376
+
+Latency (ms):
+         min:                                    0.00
+         avg:                                    0.00
+         max:                                   13.05
+         95th percentile:                        0.00
+         sum:                                41165.07
+
+Threads fairness:
+    events (avg/stddev):           68044376.0000/0.00
+    execution time (avg/stddev):   41.1651/0.00
+
+[0;32m============================================[0m
+[0;32mRunning I/O Benchmark (200s)[0m
+[0;32m============================================[0m
+[1;33m>>> Using 1 threads[0m
+[1;33m>>> Creating test files (10G)...[0m
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+128 files, 81920Kb each, 10240Mb total
+Creating files for the test...
+Extra file open flags: (none)
+Creating file test_file.0
+Creating file test_file.1
+Creating file test_file.2
+Creating file test_file.3
+Creating file test_file.4
+Creating file test_file.5
+Creating file test_file.6
+Creating file test_file.7
+Creating file test_file.8
+Creating file test_file.9
+Creating file test_file.10
+Creating file test_file.11
+Creating file test_file.12
+Creating file test_file.13
+Creating file test_file.14
+Creating file test_file.15
+Creating file test_file.16
+Creating file test_file.17
+Creating file test_file.18
+Creating file test_file.19
+Creating file test_file.20
+Creating file test_file.21
+Creating file test_file.22
+Creating file test_file.23
+Creating file test_file.24
+Creating file test_file.25
+Creating file test_file.26
+Creating file test_file.27
+Creating file test_file.28
+Creating file test_file.29
+Creating file test_file.30
+Creating file test_file.31
+Creating file test_file.32
+Creating file test_file.33
+Creating file test_file.34
+Creating file test_file.35
+Creating file test_file.36
+Creating file test_file.37
+Creating file test_file.38
+Creating file test_file.39
+Creating file test_file.40
+Creating file test_file.41
+Creating file test_file.42
+Creating file test_file.43
+Creating file test_file.44
+Creating file test_file.45
+Creating file test_file.46
+Creating file test_file.47
+Creating file test_file.48
+Creating file test_file.49
+Creating file test_file.50
+Creating file test_file.51
+Creating file test_file.52
+Creating file test_file.53
+Creating file test_file.54
+Creating file test_file.55
+Creating file test_file.56
+Creating file test_file.57
+Creating file test_file.58
+Creating file test_file.59
+Creating file test_file.60
+Creating file test_file.61
+Creating file test_file.62
+Creating file test_file.63
+Creating file test_file.64
+Creating file test_file.65
+Creating file test_file.66
+Creating file test_file.67
+Creating file test_file.68
+Creating file test_file.69
+Creating file test_file.70
+Creating file test_file.71
+Creating file test_file.72
+Creating file test_file.73
+Creating file test_file.74
+Creating file test_file.75
+Creating file test_file.76
+Creating file test_file.77
+Creating file test_file.78
+Creating file test_file.79
+Creating file test_file.80
+Creating file test_file.81
+Creating file test_file.82
+Creating file test_file.83
+Creating file test_file.84
+Creating file test_file.85
+Creating file test_file.86
+Creating file test_file.87
+Creating file test_file.88
+Creating file test_file.89
+Creating file test_file.90
+Creating file test_file.91
+Creating file test_file.92
+Creating file test_file.93
+Creating file test_file.94
+Creating file test_file.95
+Creating file test_file.96
+Creating file test_file.97
+Creating file test_file.98
+Creating file test_file.99
+Creating file test_file.100
+Creating file test_file.101
+Creating file test_file.102
+Creating file test_file.103
+Creating file test_file.104
+Creating file test_file.105
+Creating file test_file.106
+Creating file test_file.107
+Creating file test_file.108
+Creating file test_file.109
+Creating file test_file.110
+Creating file test_file.111
+Creating file test_file.112
+Creating file test_file.113
+Creating file test_file.114
+Creating file test_file.115
+Creating file test_file.116
+Creating file test_file.117
+Creating file test_file.118
+Creating file test_file.119
+Creating file test_file.120
+Creating file test_file.121
+Creating file test_file.122
+Creating file test_file.123
+Creating file test_file.124
+Creating file test_file.125
+Creating file test_file.126
+Creating file test_file.127
+10737418240 bytes written in 191.66 seconds (53.43 MiB/sec).
+tee: ./benchmark_results/pcc-test-01_benchmark_20260106_222006.txt: No such file or directory
+
+========================================
+I/O BENCHMARK
+========================================
+Threads: 1
+Duration: 200s
+File size: 10G
+
+--- Sequential Read ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Extra file open flags: (none)
+128 files, 80MiB each
+10GiB total file size
+Block size 16KiB
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing sequential read test
+Initializing worker threads...
+
+Threads started!
+
+
+File operations:
+    reads/s:                      3430.55
+    writes/s:                     0.00
+    fsyncs/s:                     0.00
+
+Throughput:
+    read, MiB/s:                  53.60
+    written, MiB/s:               0.00
+
+General statistics:
+    total time:                          50.0213s
+    total number of events:              171607
+
+Latency (ms):
+         min:                                    0.00
+         avg:                                    0.29
+         max:                                   59.16
+         95th percentile:                        0.55
+         sum:                                49930.27
+
+Threads fairness:
+    events (avg/stddev):           171607.0000/0.00
+    execution time (avg/stddev):   49.9303/0.00
+
+
+--- Sequential Write ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Extra file open flags: (none)
+128 files, 80MiB each
+10GiB total file size
+Block size 16KiB
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing sequential write (creation) test
+Initializing worker threads...
+
+Threads started!
+
+
+File operations:
+    reads/s:                      0.00
+    writes/s:                     1728.29
+    fsyncs/s:                     2214.75
+
+Throughput:
+    read, MiB/s:                  0.00
+    written, MiB/s:               27.00
+
+General statistics:
+    total time:                          50.0474s
+    total number of events:              197219
+
+Latency (ms):
+         min:                                    0.01
+         avg:                                    0.25
+         max:                                   75.70
+         95th percentile:                        0.80
+         sum:                                49832.96
+
+Threads fairness:
+    events (avg/stddev):           197219.0000/0.00
+    execution time (avg/stddev):   49.8330/0.00
+
+
+--- Random Read ---
+sysbench 1.0.20 (using system LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from current time
+
+
+Extra file open flags: (none)
+128 files, 80MiB each
+10GiB total file size
+Block size 16KiB
+Number of IO requests: 0
+Read/Write ratio for combined random IO test: 1.50
+Periodic FSYNC enabled, calling fsync() each 100 requests.
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing random read test
+FATAL: Size of file 'test_file.16' is 71.562MiB, but at least 80MiB is expected.
+WARNING: Did you run 'prepare' with different --file-total-size or --file-num values?

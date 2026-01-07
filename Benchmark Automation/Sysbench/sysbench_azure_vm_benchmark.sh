@@ -7,7 +7,7 @@
 set -e
 
 # Configuration
-BENCHMARK_DURATION=1200  # 20 minutes per test (3 tests = 60 minutes)
+BENCHMARK_DURATION=200   # ~3.3 minutes per test (3 tests = 10 minutes)
 FILEIO_SIZE="10G"
 OUTPUT_DIR="./benchmark_results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

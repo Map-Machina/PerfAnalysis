@@ -12,7 +12,7 @@ set -e
 # Configuration
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 RESULTS_DIR="$(dirname "$0")/results"
-PCC_DURATION="70m"    # 1 hour 10 minutes
+PCC_DURATION="15m"    # 15 minutes
 PCC_FREQUENCY="5s"    # 5 second collection interval
 
 # VM Configuration
