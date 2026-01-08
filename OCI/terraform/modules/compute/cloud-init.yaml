@@ -107,11 +107,11 @@ write_files:
     permissions: '0755'
 
 runcmd:
-  # Log start time
-  - echo "$(date): Cloud-init runcmd started" >> /var/log/cloud-init-perftest.log
+  # Log start time - use single quotes to avoid YAML parsing issues with colons
+  - 'echo "Cloud-init runcmd started at $(date)" >> /var/log/cloud-init-perftest.log'
 
   # Verify swap is active
-  - echo "$(date): Swap status - $(swapon --show)" >> /var/log/cloud-init-perftest.log
+  - 'echo "Swap status at $(date) - $(swapon --show)" >> /var/log/cloud-init-perftest.log'
 
   # Create pcc user (in runcmd to avoid interfering with opc SSH keys)
   - useradd -m -G wheel -s /bin/bash pcc || true
@@ -133,7 +133,7 @@ runcmd:
   - chown -R pcc:pcc /home/pcc
 
   # Log completion - DO NOT install packages during cloud-init
-  - echo "$(date): Cloud-init runcmd complete - ready for post-boot setup" >> /var/log/cloud-init-perftest.log
+  - 'echo "Cloud-init runcmd complete at $(date) - ready for post-boot setup" >> /var/log/cloud-init-perftest.log'
 
 final_message: |
   =======================================================
