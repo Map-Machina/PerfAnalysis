@@ -234,6 +234,27 @@ make init
 make test
 ```
 
+### Restarting Services After Updates
+
+**Important**: After making changes to the XATbackend code (models, views, templates), you must restart the Docker services for the changes to take effect:
+
+```bash
+# Restart all services
+docker compose down && docker compose up -d
+
+# Or restart just the web backend
+docker compose restart xatbackend
+
+# Verify services are running
+docker compose ps
+```
+
+This applies to:
+- Model changes (collectors/models.py)
+- View changes (dashboard/views.py)
+- Template changes (dashboard/templates/)
+- Settings changes (core/settings.py)
+
 ### Code Quality
 
 - Go: golangci-lint with 20 linters
