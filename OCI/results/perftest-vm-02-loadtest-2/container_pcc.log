@@ -1,0 +1,7 @@
+Performance Collector Client for Containers v1.0.0
+Collection file: /home/ubuntu/results/20260110_050336/container_collection.json
+Duration: 630s
+Frequency: 5s
+Detected runtimes: [docker]
+Starting collection...
+Collection complete

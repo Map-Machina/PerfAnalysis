@@ -4,6 +4,67 @@ This document describes the end-to-end workflow for collecting, processing, and 
 
 ---
 
+## ⚠️ CRITICAL: Pre-Flight Verification Required
+
+**BEFORE running ANY load test on ANY system, you MUST verify that pcc is actively collecting data.**
+
+### The Problem
+
+The `pcc` binary defaults to **trickle mode** (streaming to a server) when `PCC_MODE` is not explicitly set. This causes the error:
+
+```
+NewClient: must set api key
+```
+
+If you see this error, **your collection has failed** and no data is being recorded.
+
+### The Solution
+
+**ALWAYS** set `PCC_MODE=local` explicitly when collecting to a local file:
+
+```bash
+# CORRECT - Explicit local mode
+PCC_MODE=local \
+PCC_DURATION=10m \
+PCC_FREQUENCY=1s \
+PCC_COLLECTION=~/loadtest.json \
+./pcc
+
+# WRONG - Will default to trickle mode and fail
+PCC_DURATION=10m \
+PCC_FREQUENCY=1s \
+PCC_COLLECTION=~/loadtest.json \
+./pcc
+```
+
+### Mandatory Verification Steps
+
+Before starting ANY load test:
+
+1. **Start pcc with explicit `PCC_MODE=local`**
+2. **Wait 5 seconds** for initialization
+3. **Verify the process is running**: `ps aux | grep pcc`
+4. **Verify the collection file exists**: `ls -la ~/loadtest.json`
+5. **Verify the file has data**: `wc -l ~/loadtest.json` (should show > 0 lines)
+6. **Only then start your load test**
+
+If ANY verification step fails, **STOP** and troubleshoot before proceeding.
+
+### Automated Verification Script
+
+Use the universal load test script at `scripts/run_loadtest.sh` which includes automatic pre-flight verification:
+
+```bash
+# Copy to target system and run
+scp scripts/run_loadtest.sh user@target:~/
+ssh user@target
+./run_loadtest.sh 10  # 10-minute test with automatic verification
+```
+
+The script will **automatically abort** if pcc is not collecting properly.
+
+---
+
 ## System Overview
 
 ```
@@ -100,29 +161,44 @@ chmod +x ~/pcc
 
 Collects metrics and saves to a local JSON file.
 
+**⚠️ CRITICAL: You MUST set `PCC_MODE=local` explicitly!**
+
 **On Target System:**
 
 ```bash
-# Collect for 10 minutes at 1-second intervals
+# CORRECT: Collect for 10 minutes at 1-second intervals with explicit local mode
+PCC_MODE=local \
 PCC_DURATION=10m \
 PCC_FREQUENCY=1s \
 PCC_COLLECTION=~/loadtest.json \
 ./pcc
 
-# Or with explicit environment file
+# CORRECT: With explicit environment variables
+export PCC_MODE=local
 export PCC_DURATION=1h
 export PCC_FREQUENCY=15s
 export PCC_COLLECTION=~/hourly-collection.json
 ./pcc
 ```
 
+**Verify collection is working before starting load tests:**
+
+```bash
+# After starting pcc, wait 5 seconds then verify:
+sleep 5
+ls -la ~/loadtest.json           # File should exist
+wc -l ~/loadtest.json            # Should show > 0 lines
+ps aux | grep pcc                 # Process should be running
+```
+
 **Environment Variables:**
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `PCC_DURATION` | How long to collect | `10m`, `1h`, `24h` |
-| `PCC_FREQUENCY` | Sampling interval | `1s`, `5s`, `15s` |
-| `PCC_COLLECTION` | Output JSON file path | `~/loadtest.json` |
+| Variable | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `PCC_MODE` | Collection mode | `local` (file) or `trickle` (server) | **YES - Always set to `local` for file collection** |
+| `PCC_DURATION` | How long to collect | `10m`, `1h`, `24h` | Yes |
+| `PCC_FREQUENCY` | Sampling interval | `1s`, `5s`, `15s` | Yes |
+| `PCC_COLLECTION` | Output JSON file path | `~/loadtest.json` | Yes (for local mode) |
 
 ### 2.2 Trickle Mode (Real-time Streaming)
 
@@ -321,10 +397,47 @@ docker compose down && docker compose up -d
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
+| **"NewClient: must set api key"** | **PCC_MODE not set to `local`** | **Add `PCC_MODE=local` to pcc command** |
+| Empty collection file | pcc failed silently | Check pcc log file, verify PCC_MODE=local |
 | No data in dashboard | Time range filtering | Click "ALL" button |
 | 302 redirects on API | Not authenticated | Log in via browser first |
 | Empty charts | No data imported | Verify import completed |
 | Stale data after edit | Container not restarted | `docker compose restart xatbackend` |
+
+### 7.4 Troubleshooting pcc Collection Failures
+
+**Symptom**: `NewClient: must set api key` error
+
+**Root Cause**: The `pcc` binary defaults to trickle mode (streaming to a server) when `PCC_MODE` is not explicitly set. Without an API key, the trickle connection fails.
+
+**Solution**:
+```bash
+# Always set PCC_MODE=local for file-based collection
+PCC_MODE=local \
+PCC_DURATION=10m \
+PCC_FREQUENCY=1s \
+PCC_COLLECTION=~/loadtest.json \
+./pcc
+```
+
+**Symptom**: Collection file exists but is empty
+
+**Root Cause**: pcc process died or failed to initialize
+
+**Solution**:
+1. Check the pcc log file for errors
+2. Verify pcc process is running: `ps aux | grep pcc`
+3. Ensure sufficient disk space
+4. Check file permissions
+
+**Symptom**: Missing metrics in collection
+
+**Root Cause**: pcc started AFTER load test began
+
+**Solution**: Always use the pre-flight verification workflow:
+1. Start pcc first
+2. Wait for verification (file exists, has data)
+3. Only then start load test
 
 ---
 
@@ -338,10 +451,31 @@ cd ~/projects/PerfCollector2/perfcollector2
 GOOS=linux GOARCH=amd64 go build -o bin/pcc-linux ./cmd/pcc
 scp bin/pcc-linux azureuser@pcc-test-vm.eastus.cloudapp.azure.com:~/pcc
 
-# === TARGET SYSTEM: Run collection ===
+# === TARGET SYSTEM: Start collection with verification ===
 ssh azureuser@pcc-test-vm.eastus.cloudapp.azure.com
 chmod +x ~/pcc
-PCC_DURATION=10m PCC_FREQUENCY=1s PCC_COLLECTION=~/benchmark.json ./pcc
+
+# Start pcc with EXPLICIT local mode (CRITICAL!)
+PCC_MODE=local \
+PCC_DURATION=10m \
+PCC_FREQUENCY=1s \
+PCC_COLLECTION=~/benchmark.json \
+./pcc &
+
+# MANDATORY: Wait and verify collection is working
+sleep 5
+if [ ! -f ~/benchmark.json ]; then
+    echo "ERROR: Collection file not created! Check pcc output."
+    exit 1
+fi
+if [ $(wc -l < ~/benchmark.json) -eq 0 ]; then
+    echo "ERROR: Collection file is empty! pcc may have failed."
+    exit 1
+fi
+echo "SUCCESS: pcc is collecting data. Starting load test..."
+
+# Now safe to start your load test
+sysbench cpu --threads=2 --time=600 run
 
 # === LOCAL MACHINE: Retrieve and process ===
 mkdir -p ~/projects/PerfAnalysis/Azure/results/benchmark
@@ -362,6 +496,31 @@ docker compose exec xatbackend python manage.py import_performance \
 
 # === LOCAL MACHINE: View in browser ===
 open http://localhost:8000/dashboard/
+```
+
+### Alternative: Using the Universal Load Test Script
+
+For automated testing with built-in verification, use the provided script:
+
+```bash
+# === LOCAL MACHINE: Deploy script and binaries ===
+scp scripts/run_loadtest.sh azureuser@target-vm:~/
+scp bin/pcc-linux azureuser@target-vm:~/
+scp bin/pcc-container-linux azureuser@target-vm:~/
+
+# === TARGET SYSTEM: Run automated test ===
+ssh azureuser@target-vm
+chmod +x ~/run_loadtest.sh ~/pcc-linux ~/pcc-container-linux
+
+# Run 10-minute test with automatic verification
+./run_loadtest.sh 10
+
+# Script will:
+# 1. Verify binaries exist
+# 2. Start pcc collectors
+# 3. VERIFY collectors are working (abort if not)
+# 4. Run load tests
+# 5. Collect results
 ```
 
 ---
@@ -392,3 +551,4 @@ open http://localhost:8000/dashboard/
 - [CLAUDE.md](../CLAUDE.md) - Agent-based development guide
 - [USER_GUIDE.md](../USER_GUIDE.md) - User documentation
 - [DEPLOYMENT_GUIDE.md](../DEPLOYMENT_GUIDE.md) - Production deployment
+- [run_loadtest.sh](../scripts/run_loadtest.sh) - Universal load test script with pre-flight verification

@@ -1,0 +1,18 @@
+2026-01-10 05:03:38 INFO pcc pcc.go:333 Performance Collector Clientv1.0.0-dev+ab03b19b0 (pcc, go1.25.5 linux/amd64)
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_APIKEY           : 
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_BENCHMARK_COMMAND: 
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_BENCHMARK_DELAY  : 5s
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_BENCHMARK_ENABLE : false
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_BENCHMARK_NAME   : 
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_BENCHMARK_TYPE   : custom
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_COLLECTION       : /home/ubuntu/results/20260110_050336/host_collection.json
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_DURATION         : 630s
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_FREQUENCY        : 5s
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_IDENTIFIER       : d2dfa4d1a094456a8c07642d5f886d8e
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_LOGLEVEL         : pcc=INFO;hoarder=INFO
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_MACHINE_NAME     : 
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_MODE             : local
+2026-01-10 05:03:38 INFO pcc pcc.go:337 PCC_SERVER_URL       : http://localhost:8080
+2026-01-10 05:14:08 INFO hoarder hoarder.go:260 hoarder service shutting down
+2026-01-10 05:14:08 INFO hoarder hoarder.go:262 hoarder service clean shutdown
+hoarder service terminated: pcc collection complete
