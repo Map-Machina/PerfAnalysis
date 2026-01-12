@@ -13,3 +13,6 @@
 [submodule "Dash003"]
 	path = Dash003
 	url = https://github.com/businessperformancetuning/Dash003.git
+[submodule "perf-dashboard"]
+	path = perf-dashboard
+	url = https://github.com/Dan-MapMAchina/perf-dashboard.git
