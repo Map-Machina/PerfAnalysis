@@ -27,6 +27,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./XATbackend:/app
+      - ~/.oci:/root/.oci:ro  # Mount OCI config for cloud provider integration
     ports:
       - "8000:8000"
     environment:
