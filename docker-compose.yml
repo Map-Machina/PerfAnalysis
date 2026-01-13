@@ -28,6 +28,7 @@ services:
     volumes:
       - ./XATbackend:/app
       - ~/.oci:/root/.oci:ro  # Mount OCI config for cloud provider integration
+      - ~/.ssh:/root/.ssh:ro  # Mount SSH keys for remote deployment
     ports:
       - "8000:8000"
     environment:
