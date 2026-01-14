@@ -3710,6 +3710,17 @@ All 16 agents are located in `/Users/danmcdougal/projects/PerfAnalysis/agents/`:
 3. **Request deliverables** - Ask for specific outputs (code, config, docs)
 4. **Use multiple agents** - Complex tasks require collaboration
 5. **Test integration points** - Boundaries between components are critical
+6. **Use Chrome DevTools MCP for browser state issues** - ALWAYS use the chrome-devtools MCP server when debugging frontend issues, stale UI state, or when browser behavior doesn't match expected results
+
+### MCP Server Requirements
+
+**Chrome DevTools MCP** (MANDATORY for frontend debugging):
+- When UI state appears stale (e.g., "Starting" showing for too long)
+- When browser behavior doesn't match Docker/backend logs
+- When debugging React component state issues
+- When investigating client-side polling or API response handling
+
+Use the Chrome DevTools MCP to inspect actual browser state instead of relying solely on server logs. HTTP 200 responses don't guarantee correct client-side rendering or state updates.
 
 ---
 
