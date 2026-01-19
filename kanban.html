@@ -1568,13 +1568,19 @@
             loadBoardState();
         });
 
+        let wasDragged = false;  // Track if a drag occurred to prevent click
+
         function initCardClicks() {
             // Add click handlers to all cards for opening the work modal
             document.querySelectorAll('.card').forEach(card => {
-                card.style.cursor = 'pointer';
+                // Use mousedown/mouseup to detect drag vs click
+                card.addEventListener('mousedown', () => {
+                    wasDragged = false;
+                });
+
                 card.addEventListener('click', (e) => {
-                    // Don't trigger if clicking on action buttons or during drag
-                    if (e.target.closest('.card-action-btn') || card.classList.contains('dragging')) {
+                    // Don't trigger if clicking on action buttons or if drag occurred
+                    if (e.target.closest('.card-action-btn') || wasDragged) {
                         return;
                     }
                     const taskId = card.dataset.id;
@@ -1602,6 +1608,7 @@
         }
 
         function handleDragStart(e) {
+            wasDragged = true;  // Mark that a drag started to prevent click
             draggedCard = this;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
