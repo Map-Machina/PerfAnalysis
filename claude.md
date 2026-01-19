@@ -1,7 +1,102 @@
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║   ███████╗████████╗ ██████╗ ██████╗     ██████╗ ███████╗ █████╗ ██████╗      ║
+║   ██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗    ██╔══██╗██╔════╝██╔══██╗██╔══██╗     ║
+║   ███████╗   ██║   ██║   ██║██████╔╝    ██████╔╝█████╗  ███████║██║  ██║     ║
+║   ╚════██║   ██║   ██║   ██║██╔═══╝     ██╔══██╗██╔══╝  ██╔══██║██║  ██║     ║
+║   ███████║   ██║   ╚██████╔╝██║         ██║  ██║███████╗██║  ██║██████╔╝     ║
+║   ╚══════╝   ╚═╝    ╚═════╝ ╚═╝         ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝      ║
+║                                                                              ║
+║   BEFORE RESPONDING TO ANY REQUEST, YOU MUST:                                ║
+║                                                                              ║
+║   1. STATE WHICH AGENT(S) YOU ARE INVOKING                                   ║
+║   2. STATE WHICH MCP SERVER(S) ARE REQUIRED (if any)                         ║
+║   3. USE THE FORMAT: "As the [AGENT NAME]: ..."                              ║
+║                                                                              ║
+║   FAILURE TO DO THIS IS A CRITICAL ERROR. NO EXCEPTIONS.                     ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+
+# ⛔ MANDATORY FIRST ACTION - READ THIS BEFORE DOING ANYTHING ⛔
+
+## YOU MUST DECLARE AGENTS AND MCP SERVERS BEFORE EVERY RESPONSE
+
+**This is not a guideline. This is not a suggestion. This is a HARD REQUIREMENT.**
+
+```
+╔════════════════════════════════════════════════════════════════════════════╗
+║  REQUIRED FORMAT FOR EVERY RESPONSE:                                       ║
+║                                                                            ║
+║  **Agent(s)**: [AGENT NAME(S)]                                             ║
+║  **MCP Server(s)**: [MCP SERVER(S) or "None required"]                     ║
+║                                                                            ║
+║  "As the [AGENT NAME]: [your response]"                                    ║
+║                                                                            ║
+║  Example:                                                                  ║
+║  **Agent(s)**: Backend Python Developer, Data Architect                    ║
+║  **MCP Server(s)**: postgres (for database queries)                        ║
+║                                                                            ║
+║  "As the Backend Python Developer: I'll fix the Django model..."           ║
+║                                                                            ║
+║  IF YOU SKIP THIS STEP, YOU ARE VIOLATING PROJECT REQUIREMENTS.            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+```
+
+### Quick Agent Reference (Choose One or More)
+
+| Agent | Use For |
+|-------|---------|
+| **Go Backend Developer** | perfcollector2, Go code, /proc parsing |
+| **Backend Python Developer** | XATbackend, Django, Python code |
+| **Django Tenants Specialist** | Multi-tenancy, tenant isolation |
+| **R Performance Expert** | automated-Reporting, R code, ggplot2 |
+| **Linux Systems Engineer** | /proc filesystem, system metrics |
+| **Security Architect** | Authentication, authorization, OWASP |
+| **DevOps Engineer** | Docker, Azure, CI/CD, deployment |
+| **Integration Architect** | Cross-component workflows, data flow |
+| **Data Architect** | Database schema, queries, PostgreSQL |
+| **API Architect** | REST API design, endpoints |
+| **Solutions Architect** | System architecture, scalability |
+| **Automation Engineer** | CLI tools, workflows, scheduling |
+| **Configuration Management Specialist** | YAML config, environment variables |
+| **Data Quality Engineer** | Validation, data integrity |
+| **Time-Series Architect** | Time-series data, partitioning |
+| **Oracle Developer** | Oracle database, PL/SQL |
+
+### Quick MCP Server Reference (Choose as Needed)
+
+| MCP Server | Use For | Tools Available |
+|------------|---------|-----------------|
+| **postgres** | Direct database queries, schema inspection | `mcp__postgres__query` |
+| **playwright** | Browser automation, E2E testing, screenshots | `mcp__playwright__*` (navigate, click, snapshot, etc.) |
+| **puppeteer** | Browser automation, screenshots | `mcp__puppeteer__*` (navigate, screenshot, click, etc.) |
+| **github** | Issues, PRs, repository operations | `mcp__github__*` (create_issue, create_pull_request, etc.) |
+| **filesystem** | Extended file operations | `mcp__filesystem__*` (read, write, list, search, etc.) |
+
+### Agent + MCP Server Mapping
+
+| Task Type | Agent(s) | MCP Server(s) |
+|-----------|----------|---------------|
+| Database queries/debugging | Data Architect | **postgres** |
+| Frontend UI debugging | Backend Python Developer | **playwright** or **puppeteer** |
+| E2E testing | Testing Engineer, DevOps Engineer | **playwright** |
+| GitHub issue/PR management | DevOps Engineer | **github** |
+| Bulk file operations | Configuration Management Specialist | **filesystem** |
+| Cross-tenant data verification | Django Tenants Specialist, Data Architect | **postgres** |
+| Screenshot documentation | DevOps Engineer | **playwright** or **puppeteer** |
+
+### Conversation Logging Requirement
+
+**ALSO MANDATORY**: Append all exchanges to `CONVERSATION_LOG.md` in the repository root.
+
+---
+
 # Claude Code Project Guide - PerfAnalysis Integrated Performance Monitoring Ecosystem
 
 **Version**: 1.0
-**Last Updated**: 2026-01-04
+**Last Updated**: 2026-01-15
 **Total Agents**: 16
 **Project Status**: Active Development
 
@@ -19,10 +114,11 @@
 │                                                               │
 │ 1. READ THE REQUEST                                          │
 │ 2. IDENTIFY THE APPROPRIATE AGENT(S)                         │
-│ 3. STATE WHICH AGENT(S) YOU ARE INVOKING                     │
-│ 4. PROCEED WITH THE AGENT'S EXPERTISE                        │
+│ 3. IDENTIFY REQUIRED MCP SERVER(S) (or state "None")         │
+│ 4. STATE BOTH AGENT(S) AND MCP SERVER(S)                     │
+│ 5. PROCEED WITH THE AGENT'S EXPERTISE                        │
 │                                                               │
-│ NO EXCEPTIONS. NO SHORTCUTS. AGENT SELECTION IS MANDATORY.   │
+│ NO EXCEPTIONS. NO SHORTCUTS. ALLOCATION IS MANDATORY.        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -1271,6 +1367,10 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **ggplot2/charts** | R Performance Expert | - |
 | **Workflow orchestration** | Automation Engineer | Integration Architect |
 | **Multi-tenancy** | Django Tenants Specialist | Security Architect |
+| **Browser debugging** | Backend Python Developer | DevOps Engineer (use **chrome-devtools** MCP) |
+| **Database queries** | Data Architect | Backend Python Developer (use **postgres** MCP) |
+| **E2E testing** | Testing Engineer | DevOps Engineer (use **playwright** MCP) |
+| **GitHub operations** | DevOps Engineer | - (use **github** MCP) |
 
 ---
 
@@ -1294,6 +1394,10 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Plan Oracle migration** | Oracle Developer | Data Architect, R Performance Expert | "Migrate from CSV to Oracle" |
 | **Design partitioning** | Time-Series Architect | Data Architect | "Partition by month" |
 | **Architect system** | Solutions Architect | Integration Architect, Security Architect | "Design for 1000 machines" |
+| **Debug frontend UI** | Backend Python Developer | DevOps Engineer | "UI not updating after API call" (use chrome-devtools MCP) |
+| **Run E2E tests** | Testing Engineer | DevOps Engineer | "Test login flow across browsers" (use playwright MCP) |
+| **Query database directly** | Data Architect | Backend Python Developer | "Check tenant data isolation" (use postgres MCP) |
+| **Manage GitHub issues** | DevOps Engineer | - | "Create issue for bug tracking" (use github MCP) |
 
 ---
 
@@ -3712,15 +3816,97 @@ All 16 agents are located in `/Users/danmcdougal/projects/PerfAnalysis/agents/`:
 5. **Test integration points** - Boundaries between components are critical
 6. **Use Chrome DevTools MCP for browser state issues** - ALWAYS use the chrome-devtools MCP server when debugging frontend issues, stale UI state, or when browser behavior doesn't match expected results
 
-### MCP Server Requirements
+### MCP Server Configuration
 
-**Chrome DevTools MCP** (MANDATORY for frontend debugging):
-- When UI state appears stale (e.g., "Starting" showing for too long)
-- When browser behavior doesn't match Docker/backend logs
-- When debugging React component state issues
-- When investigating client-side polling or API response handling
+The following MCP servers are configured for this project in `.claude/settings.json`:
 
-Use the Chrome DevTools MCP to inspect actual browser state instead of relying solely on server logs. HTTP 200 responses don't guarantee correct client-side rendering or state updates.
+| MCP Server | Purpose | When to Use |
+|------------|---------|-------------|
+| **chrome-devtools** | Browser debugging, DOM inspection, console access | Frontend debugging, stale UI state, React component issues |
+| **postgres** | Direct PostgreSQL database queries | Database inspection, query testing, schema verification |
+| **filesystem** | Extended file operations | Bulk file operations, directory management |
+| **github** | GitHub API integration | Issues, PRs, repository management, CI/CD status |
+| **playwright** | Browser automation and E2E testing | Automated testing, screenshot capture, cross-browser testing |
+
+#### Chrome DevTools MCP (MANDATORY for frontend debugging)
+
+Use this MCP server when:
+- UI state appears stale (e.g., "Starting" showing for too long)
+- Browser behavior doesn't match Docker/backend logs
+- Debugging React component state issues
+- Investigating client-side polling or API response handling
+
+**Important**: HTTP 200 responses don't guarantee correct client-side rendering. Use Chrome DevTools MCP to inspect actual browser state.
+
+#### PostgreSQL MCP (For database operations)
+
+Use this MCP server when:
+- Querying the XATbackend database directly
+- Verifying data integrity across tenants
+- Testing complex SQL queries before Django ORM implementation
+- Debugging data-related issues
+
+**Configuration**: Connects to `localhost:5432` with database `perfanalysis`.
+
+#### GitHub MCP (For repository management)
+
+Use this MCP server when:
+- Creating or updating issues
+- Managing pull requests
+- Checking CI/CD pipeline status
+- Reviewing repository statistics
+
+#### Playwright MCP (For E2E testing)
+
+Use this MCP server when:
+- Running automated browser tests
+- Capturing screenshots for documentation
+- Testing cross-browser compatibility
+- Automating repetitive UI testing tasks
+
+**Note**: Playwright requires Node.js and will auto-install browser binaries on first use.
+
+---
+
+## CRITICAL REQUIREMENT: Conversation Logging
+
+**THIS IS MANDATORY**: All conversations related to PerfAnalysis and its subprojects MUST be logged to `CONVERSATION_LOG.md` in the repository root.
+
+### The Rule
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ FOR EVERY PROMPT AND RESPONSE:                               │
+│                                                               │
+│ 1. APPEND the exchange to CONVERSATION_LOG.md                │
+│ 2. INCLUDE: Date, User Request, Agent(s) Invoked, Response   │
+│ 3. INCLUDE: Files modified, decisions made, context          │
+│                                                               │
+│ NO EXCEPTIONS. MAINTAIN THE LOG FOR CONTINUITY.              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Log Entry Format
+
+Each entry should include:
+- **Date/Time**: Session timestamp
+- **User Request**: Summary of what was asked
+- **Agent(s) Invoked**: Which specialized agents were used
+- **Response Summary**: What was done/decided
+- **Files Modified**: List of changed files (if any)
+- **Context**: Important decisions, rationale, or notes for future sessions
+
+### Why This Matters
+
+- Provides continuity across chat sessions
+- Documents architectural decisions and rationale
+- Helps track progress on multi-session tasks
+- Creates audit trail for debugging and review
+- Enables knowledge transfer between sessions
+
+### Log File Location
+
+`/Users/danmcdougal/projects/PerfAnalysis/CONVERSATION_LOG.md`
 
 ---
 

@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PerfAnalysis - Kanban Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e4e4e4;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #94a3b8;
+            align-items: center;
+        }
+
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge {
+            background: #22c55e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .board-container {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+            overflow-x: auto;
+            min-height: calc(100vh - 100px);
+        }
+
+        .column {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            min-width: 320px;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 160px);
+            transition: all 0.3s ease;
+        }
+
+        .column.drag-over {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .column-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .column-cards {
+            padding: 12px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 100px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            cursor: grab;
+            position: relative;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+            cursor: grabbing;
+        }
+
+        .card.drag-ghost {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px dashed #3b82f6;
+        }
+
+        .card-id {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .card-component {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .component-perfcollector2 { background: #3b82f6; color: white; }
+        .component-xatbackend { background: #8b5cf6; color: white; }
+        .component-perf-dashboard { background: #ec4899; color: white; }
+        .component-automated-reporting { background: #f59e0b; color: white; }
+        .component-integration { background: #10b981; color: white; }
+        .component-devops { background: #6366f1; color: white; }
+        .component-documentation { background: #64748b; color: white; }
+        .component-testing { background: #14b8a6; color: white; }
+        .component-configuration { background: #f97316; color: white; }
+        .component-data-quality { background: #84cc16; color: white; }
+        .component-new { background: #a855f7; color: white; }
+        .component-xatsimplified { background: #06b6d4; color: white; }
+
+        .card-priority {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .priority-high { color: #ef4444; }
+        .priority-medium { color: #f59e0b; }
+        .priority-low { color: #22c55e; }
+
+        .card-date {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .card-notes {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            line-height: 1.4;
+        }
+
+        .card-actions {
+            display: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            gap: 4px;
+        }
+
+        .card:hover .card-actions {
+            display: flex;
+        }
+
+        .card-action-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .card-action-btn:hover {
+            background: rgba(59, 130, 246, 0.8);
+        }
+
+        .card-action-btn.start-work {
+            background: rgba(34, 197, 94, 0.8);
+        }
+
+        .card-action-btn.start-work:hover {
+            background: rgba(34, 197, 94, 1);
+        }
+
+        /* Column-specific colors */
+        .column-backlog .column-header { border-left: 4px solid #64748b; }
+        .column-todo .column-header { border-left: 4px solid #3b82f6; }
+        .column-progress .column-header { border-left: 4px solid #f59e0b; }
+        .column-review .column-header { border-left: 4px solid #a855f7; }
+        .column-done .column-header { border-left: 4px solid #22c55e; }
+
+        .stats-bar {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px 40px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .stat-value.green { color: #22c55e; }
+        .stat-value.blue { color: #3b82f6; }
+        .stat-value.orange { color: #f59e0b; }
+        .stat-value.purple { color: #a855f7; }
+
+        .filter-bar {
+            padding: 16px 40px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e4e4e4;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sprint-section {
+            background: rgba(0, 0, 0, 0.2);
+            margin: 20px 40px;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sprint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sprint-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sprint-dates {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .sprint-tasks {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .sprint-task {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sprint-task:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sprint-task-priority {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            background: #3b82f6;
+        }
+
+        .sprint-task-info {
+            flex: 1;
+        }
+
+        .sprint-task-id {
+            font-size: 11px;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .sprint-task-name {
+            font-size: 13px;
+        }
+
+        .sprint-task-actions {
+            display: none;
+        }
+
+        .sprint-task:hover .sprint-task-actions {
+            display: flex;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-task-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .modal-task-id {
+            font-family: monospace;
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .modal-task-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .modal-task-component {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .modal-section {
+            margin-bottom: 16px;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .modal-actions-list {
+            list-style: none;
+        }
+
+        .modal-actions-list li {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-actions-list li:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-actions-list li svg {
+            width: 20px;
+            height: 20px;
+            color: #64748b;
+        }
+
+        .modal-actions-list li:hover svg {
+            color: #3b82f6;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e4e4e4;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1001;
+        }
+
+        .toast {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .toast-message {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: rgba(0, 0, 0, 0.2);
+            margin: 0 40px 20px;
+            border-radius: 12px;
+            padding: 16px 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .activity-log-title {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: #64748b;
+            font-size: 11px;
+            min-width: 60px;
+        }
+
+        .activity-action {
+            color: #94a3b8;
+        }
+
+        .activity-action strong {
+            color: #e4e4e4;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .board-container {
+                padding: 16px;
+            }
+
+            .column {
+                min-width: 280px;
+            }
+
+            .stats-bar, .filter-bar {
+                padding: 16px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
+            </svg>
+            PerfAnalysis Kanban Board
+        </h1>
+        <div class="header-meta">
+            <span><span class="status-badge">Production Ready</span></span>
+            <span>Updated: <span id="lastUpdated">2026-01-19</span></span>
+            <button class="btn btn-secondary" onclick="saveBoard()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save
+            </button>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">Total Tasks</span>
+            <span class="stat-value" id="statTotal">67</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Completed</span>
+            <span class="stat-value green" id="statDone">36</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">In Progress</span>
+            <span class="stat-value orange" id="statProgress">3</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Code Lines</span>
+            <span class="stat-value blue">~39,000</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Components</span>
+            <span class="stat-value purple">6</span>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterCards('all')">All</button>
+        <button class="filter-btn" onclick="filterCards('perfcollector2')">perfcollector2</button>
+        <button class="filter-btn" onclick="filterCards('xatbackend')">XATbackend</button>
+        <button class="filter-btn" onclick="filterCards('perf-dashboard')">perf-dashboard</button>
+        <button class="filter-btn" onclick="filterCards('automated-reporting')">automated-Reporting</button>
+        <button class="filter-btn" onclick="filterCards('integration')">Integration</button>
+        <button class="filter-btn" onclick="filterCards('devops')">DevOps</button>
+    </div>
+
+    <div class="activity-log" id="activityLog">
+        <div class="activity-log-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Activity Log
+        </div>
+        <div id="activityItems">
+            <div class="activity-item">
+                <span class="activity-time">Just now</span>
+                <span class="activity-action">Board loaded. <strong>Drag cards</strong> to move them between columns.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sprint-section">
+        <div class="sprint-header">
+            <span class="sprint-title">Current Sprint</span>
+            <span class="sprint-dates">2026-01-19 to 2026-01-26</span>
+        </div>
+        <div class="sprint-tasks">
+            <div class="sprint-task" onclick="startWork('P-001', 'Complete LoadTest comparison testing')">
+                <div class="sprint-task-priority">1</div>
+                <div class="sprint-task-info">
+                    <div class="sprint-task-id">P-001</div>
+                    <div class="sprint-task-name">Complete LoadTest comparison testing</div>
+                </div>
+                <div class="sprint-task-actions">
+                    <button class="card-action-btn start-work" title="Start Work">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="sprint-task" onclick="startWork('T-001', 'YAML configuration for R reports')">
+                <div class="sprint-task-priority">2</div>
+                <div class="sprint-task-info">
+                    <div class="sprint-task-id">T-001</div>
+                    <div class="sprint-task-name">YAML configuration for R reports</div>
+                </div>
+                <div class="sprint-task-actions">
+                    <button class="card-action-btn start-work" title="Start Work">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="sprint-task" onclick="startWork('T-002', 'CLI wrapper for reporting.Rmd')">
+                <div class="sprint-task-priority">3</div>
+                <div class="sprint-task-info">
+                    <div class="sprint-task-id">T-002</div>
+                    <div class="sprint-task-name">CLI wrapper for reporting.Rmd</div>
+                </div>
+                <div class="sprint-task-actions">
+                    <button class="card-action-btn start-work" title="Start Work">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="sprint-task" onclick="startWork('T-005', 'Upload retry logic')">
+                <div class="sprint-task-priority">4</div>
+                <div class="sprint-task-info">
+                    <div class="sprint-task-id">T-005</div>
+                    <div class="sprint-task-name">Upload retry logic</div>
+                </div>
+                <div class="sprint-task-actions">
+                    <button class="card-action-btn start-work" title="Start Work">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="board-container">
+        <!-- BACKLOG Column -->
+        <div class="column column-backlog" data-column="backlog">
+            <div class="column-header">
+                <span class="column-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M9 9h6M9 13h6M9 17h4"/>
+                    </svg>
+                    Backlog
+                </span>
+                <span class="column-count" id="count-backlog">10</span>
+            </div>
+            <div class="column-cards" data-column="backlog">
+                <div class="card" data-component="new" data-id="B-001" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-001', 'Mobile app for monitoring')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-001</div>
+                    <div class="card-title">Mobile app for monitoring</div>
+                    <div class="card-meta">
+                        <span class="card-component component-new">New</span>
+                        <span class="card-priority priority-low">Low</span>
+                    </div>
+                </div>
+                <div class="card" data-component="perf-dashboard" data-id="B-002" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-002', 'Real-time dashboard updates')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-002</div>
+                    <div class="card-title">Real-time dashboard updates (WebSockets)</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+                <div class="card" data-component="integration" data-id="B-003" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-003', 'Grafana integration')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-003</div>
+                    <div class="card-title">Grafana integration</div>
+                    <div class="card-meta">
+                        <span class="card-component component-integration">Integration</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="B-010" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-010', 'perfcpumeasure integration')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-010</div>
+                    <div class="card-title">perfcpumeasure integration (from PerfCollector1)</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="B-011" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-011', 'perfreplay workload replay')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-011</div>
+                    <div class="card-title">perfreplay workload replay (from PerfCollector1)</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="B-012" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-012', 'REST API server')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-012</div>
+                    <div class="card-title">REST API server (perfapi from PerfCollector1)</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                </div>
+                <div class="card" data-component="automated-reporting" data-id="B-007" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-007', 'YAML configuration for R reports')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-007</div>
+                    <div class="card-title">YAML configuration for R reports</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                </div>
+                <div class="card" data-component="xatbackend" data-id="B-006" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-006', 'Oracle 26ai database migration')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-006</div>
+                    <div class="card-title">Oracle 26ai database migration</div>
+                    <div class="card-meta">
+                        <span class="card-component component-xatbackend">XATbackend</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+                <div class="card" data-component="devops" data-id="B-020" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-020', 'Kubernetes deployment manifests')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-020</div>
+                    <div class="card-title">Kubernetes deployment manifests</div>
+                    <div class="card-meta">
+                        <span class="card-component component-devops">DevOps</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+                <div class="card" data-component="devops" data-id="B-021" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-021', 'AWS Terraform templates')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-021</div>
+                    <div class="card-title">AWS Terraform templates</div>
+                    <div class="card-meta">
+                        <span class="card-component component-devops">DevOps</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TODO Column -->
+        <div class="column column-todo" data-column="todo">
+            <div class="column-header">
+                <span class="column-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    Todo
+                </span>
+                <span class="column-count" id="count-todo">8</span>
+            </div>
+            <div class="column-cards" data-column="todo">
+                <div class="card" data-component="automated-reporting" data-id="T-001" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-001', 'Replace hardcoded values in reporting.Rmd')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-001</div>
+                    <div class="card-title">Replace hardcoded values in reporting.Rmd with YAML config</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                    <div class="card-notes">Lines 24-30 have hardcoded storeVol, netIface, machName, UUID, loc</div>
+                </div>
+                <div class="card" data-component="automated-reporting" data-id="T-002" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-002', 'Create CLI wrapper for reporting.Rmd')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-002</div>
+                    <div class="card-title">Create CLI wrapper for reporting.Rmd</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                    <div class="card-notes">Enable command-line report generation</div>
+                </div>
+                <div class="card" data-component="integration" data-id="T-003" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-003', 'Integrate perfcpumeasure into ecosystem')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-003</div>
+                    <div class="card-title">Integrate perfcpumeasure into ecosystem</div>
+                    <div class="card-meta">
+                        <span class="card-component component-integration">Integration</span>
+                        <span class="card-priority priority-high">High</span>
+                    </div>
+                    <div class="card-notes">LoadTest feature works but not integrated with full stack</div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="T-004" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-004', 'Add /proc/vmstat parsing to pcc')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-004</div>
+                    <div class="card-title">Add /proc/vmstat parsing to pcc</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="card-notes">Memory management metrics</div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="T-005" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-005', 'Implement upload retry logic')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-005</div>
+                    <div class="card-title">Implement upload retry logic with exponential backoff</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="card-notes">Improve reliability</div>
+                </div>
+                <div class="card" data-component="automated-reporting" data-id="T-010" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-010', 'Add data.table optimization')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-010</div>
+                    <div class="card-title">Add data.table optimization to reporting.Rmd</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="card-notes">Replace data.frame for 10-100x speedup</div>
+                </div>
+                <div class="card" data-component="xatbackend" data-id="T-011" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-011', 'Implement API key rotation')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-011</div>
+                    <div class="card-title">Implement API key rotation in XATbackend</div>
+                    <div class="card-meta">
+                        <span class="card-component component-xatbackend">XATbackend</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="card-notes">Security enhancement</div>
+                </div>
+                <div class="card" data-component="xatbackend" data-id="T-012" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-012', 'Add tenant provisioning workflow')" title="Start Work">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-012</div>
+                    <div class="card-title">Add tenant provisioning workflow</div>
+                    <div class="card-meta">
+                        <span class="card-component component-xatbackend">XATbackend</span>
+                        <span class="card-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="card-notes">Streamline onboarding</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IN PROGRESS Column -->
+        <div class="column column-progress" data-column="progress">
+            <div class="column-header">
+                <span class="column-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    In Progress
+                </span>
+                <span class="column-count" id="count-progress">3</span>
+            </div>
+            <div class="column-cards" data-column="progress">
+                <div class="card" data-component="perf-dashboard" data-id="P-001" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn" onclick="event.stopPropagation(); moveToReview('P-001')" title="Move to Review">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">P-001</div>
+                    <div class="card-title">LoadTest comparison with price-performance</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">Started: 2026-01-18</span>
+                    </div>
+                    <div class="card-notes">Cost fields added, UI working</div>
+                </div>
+                <div class="card" data-component="testing" data-id="P-002" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn" onclick="event.stopPropagation(); moveToReview('P-002')" title="Move to Review">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">P-002</div>
+                    <div class="card-title">End-to-end testing across cloud providers</div>
+                    <div class="card-meta">
+                        <span class="card-component component-testing">Testing</span>
+                        <span class="card-date">Started: 2026-01-19</span>
+                    </div>
+                    <div class="card-notes">Azure, AWS, OCI tested</div>
+                </div>
+                <div class="card" data-component="documentation" data-id="P-003" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn" onclick="event.stopPropagation(); moveToReview('P-003')" title="Move to Review">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">P-003</div>
+                    <div class="card-title">Documentation consolidation</div>
+                    <div class="card-meta">
+                        <span class="card-component component-documentation">Documentation</span>
+                        <span class="card-date">Started: 2026-01-16</span>
+                    </div>
+                    <div class="card-notes">perfcollector comparison created</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REVIEW Column -->
+        <div class="column column-review" data-column="review">
+            <div class="column-header">
+                <span class="column-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Review
+                </span>
+                <span class="column-count" id="count-review">2</span>
+            </div>
+            <div class="column-cards" data-column="review">
+                <div class="card" data-component="perf-dashboard" data-id="R-001" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('R-001')" title="Mark Done">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">R-001</div>
+                    <div class="card-title">Price-performance toggle in comparison view</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">Completed: 2026-01-18</span>
+                    </div>
+                    <div class="card-notes">Toggle works, shows units/$/hr</div>
+                </div>
+                <div class="card" data-component="perf-dashboard" data-id="R-002" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('R-002')" title="Mark Done">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">R-002</div>
+                    <div class="card-title">LoadTest History page</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">Completed: 2026-01-18</span>
+                    </div>
+                    <div class="card-notes">7 tests, 4 providers displayed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE Column -->
+        <div class="column column-done" data-column="done">
+            <div class="column-header">
+                <span class="column-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Done
+                </span>
+                <span class="column-count" id="count-done">10</span>
+            </div>
+            <div class="column-cards" data-column="done">
+                <div class="card" data-component="testing" data-id="D-036" draggable="true">
+                    <div class="card-id">D-036</div>
+                    <div class="card-title">Azure pcd-server-01 LoadTest</div>
+                    <div class="card-meta">
+                        <span class="card-component component-testing">Testing</span>
+                        <span class="card-date">2026-01-19</span>
+                    </div>
+                    <div class="card-notes">322 max units</div>
+                </div>
+                <div class="card" data-component="perf-dashboard" data-id="D-033" draggable="true">
+                    <div class="card-id">D-033</div>
+                    <div class="card-title">LoadTest comparison feature</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">2026-01-18</span>
+                    </div>
+                    <div class="card-notes">Multi-provider comparison</div>
+                </div>
+                <div class="card" data-component="xatsimplified" data-id="D-032" draggable="true">
+                    <div class="card-id">D-032</div>
+                    <div class="card-title">XATSimplified backend</div>
+                    <div class="card-meta">
+                        <span class="card-component component-xatsimplified">XATSimplified</span>
+                        <span class="card-date">2026-01-18</span>
+                    </div>
+                    <div class="card-notes">Standalone API server</div>
+                </div>
+                <div class="card" data-component="xatbackend" data-id="D-031" draggable="true">
+                    <div class="card-id">D-031</div>
+                    <div class="card-title">LoadTest API integration</div>
+                    <div class="card-meta">
+                        <span class="card-component component-xatbackend">XATbackend</span>
+                        <span class="card-date">2026-01-16</span>
+                    </div>
+                    <div class="card-notes">perfcpumeasure endpoint</div>
+                </div>
+                <div class="card" data-component="perf-dashboard" data-id="D-030" draggable="true">
+                    <div class="card-id">D-030</div>
+                    <div class="card-title">perf-dashboard React application</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">2026-01-15</span>
+                    </div>
+                    <div class="card-notes">Full dashboard with charts</div>
+                </div>
+                <div class="card" data-component="documentation" data-id="D-035" draggable="true">
+                    <div class="card-id">D-035</div>
+                    <div class="card-title">perfcollector comparison analysis</div>
+                    <div class="card-meta">
+                        <span class="card-component component-documentation">Documentation</span>
+                        <span class="card-date">2026-01-16</span>
+                    </div>
+                    <div class="card-notes">3 repos compared</div>
+                </div>
+                <div class="card" data-component="automated-reporting" data-id="D-034" draggable="true">
+                    <div class="card-id">D-034</div>
+                    <div class="card-title">R radar chart visualizations</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-date">2025-12-29</span>
+                    </div>
+                    <div class="card-notes">fmsb library charts</div>
+                </div>
+                <div class="card" data-component="testing" data-id="D-020" draggable="true">
+                    <div class="card-id">D-020</div>
+                    <div class="card-title">Integration test suite</div>
+                    <div class="card-meta">
+                        <span class="card-component component-testing">Testing</span>
+                        <span class="card-date">2026-01-04</span>
+                    </div>
+                    <div class="card-notes">12 tests, 100% passing</div>
+                </div>
+                <div class="card" data-component="devops" data-id="D-001" draggable="true">
+                    <div class="card-id">D-001</div>
+                    <div class="card-title">Development environment setup</div>
+                    <div class="card-meta">
+                        <span class="card-component component-devops">DevOps</span>
+                        <span class="card-date">2026-01-04</span>
+                    </div>
+                    <div class="card-notes">Docker Compose working</div>
+                </div>
+                <div class="card" data-component="documentation" data-id="D-002" draggable="true">
+                    <div class="card-id">D-002</div>
+                    <div class="card-title">Architecture documentation</div>
+                    <div class="card-meta">
+                        <span class="card-component component-documentation">Documentation</span>
+                        <span class="card-date">2026-01-04</span>
+                    </div>
+                    <div class="card-notes">95KB ARCHITECTURE.md</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Modal -->
+    <div class="modal-overlay" id="workModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Start Work</span>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-task-info">
+                    <div class="modal-task-id" id="modalTaskId"></div>
+                    <div class="modal-task-title" id="modalTaskTitle"></div>
+                </div>
+                <div class="modal-section">
+                    <div class="modal-section-title">Quick Actions</div>
+                    <ul class="modal-actions-list">
+                        <li onclick="executeAction('move-progress')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/>
+                            </svg>
+                            <span>Move to In Progress</span>
+                        </li>
+                        <li onclick="executeAction('open-editor')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            <span>Open in VS Code</span>
+                        </li>
+                        <li onclick="executeAction('copy-task')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            <span>Copy Task ID to Clipboard</span>
+                        </li>
+                        <li onclick="executeAction('create-branch')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="6" y1="3" x2="6" y2="15"/>
+                                <circle cx="18" cy="6" r="3"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <path d="M18 9a9 9 0 0 1-9 9"/>
+                            </svg>
+                            <span>Create Git Branch</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-success" onclick="executeAction('start-all')">Start Working</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let draggedCard = null;
+        let currentTaskId = null;
+        let currentTaskTitle = null;
+
+        // Initialize drag and drop
+        document.addEventListener('DOMContentLoaded', () => {
+            initDragAndDrop();
+            updateCounts();
+            loadBoardState();
+        });
+
+        function initDragAndDrop() {
+            const cards = document.querySelectorAll('.card');
+            const columns = document.querySelectorAll('.column-cards');
+
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+
+            columns.forEach(column => {
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('dragenter', handleDragEnter);
+                column.addEventListener('dragleave', handleDragLeave);
+                column.addEventListener('drop', handleDrop);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedCard = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.id);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.column').forEach(col => {
+                col.classList.remove('drag-over');
+            });
+            draggedCard = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.closest('.column').classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!this.contains(e.relatedTarget)) {
+                this.closest('.column').classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const column = this.closest('.column');
+            column.classList.remove('drag-over');
+
+            if (draggedCard) {
+                const fromColumn = draggedCard.closest('.column-cards').dataset.column;
+                const toColumn = this.dataset.column;
+
+                this.appendChild(draggedCard);
+
+                // Log the activity
+                const taskId = draggedCard.dataset.id;
+                const taskTitle = draggedCard.querySelector('.card-title').textContent;
+                logActivity(`Moved <strong>${taskId}</strong> from ${fromColumn} to ${toColumn}`);
+
+                showToast('success', 'Card Moved', `${taskId} moved to ${toColumn}`);
+                updateCounts();
+                saveBoardState();
+            }
+        }
+
+        function filterCards(component) {
+            const cards = document.querySelectorAll('.card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            cards.forEach(card => {
+                if (component === 'all' || card.dataset.component === component) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function startWork(taskId, taskTitle) {
+            currentTaskId = taskId;
+            currentTaskTitle = taskTitle;
+            document.getElementById('modalTaskId').textContent = taskId;
+            document.getElementById('modalTaskTitle').textContent = taskTitle;
+            document.getElementById('workModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('workModal').classList.remove('active');
+            currentTaskId = null;
+            currentTaskTitle = null;
+        }
+
+        function executeAction(action) {
+            switch(action) {
+                case 'move-progress':
+                    moveCardToColumn(currentTaskId, 'progress');
+                    closeModal();
+                    showToast('success', 'Task Started', `${currentTaskId} moved to In Progress`);
+                    logActivity(`Started work on <strong>${currentTaskId}</strong>: ${currentTaskTitle}`);
+                    break;
+
+                case 'open-editor':
+                    showToast('info', 'Opening Editor', 'Launching VS Code...');
+                    // This would trigger VS Code in a real implementation
+                    logActivity(`Opened editor for <strong>${currentTaskId}</strong>`);
+                    break;
+
+                case 'copy-task':
+                    navigator.clipboard.writeText(currentTaskId);
+                    showToast('success', 'Copied', `${currentTaskId} copied to clipboard`);
+                    break;
+
+                case 'create-branch':
+                    const branchName = `feature/${currentTaskId.toLowerCase()}-${currentTaskTitle.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 30)}`;
+                    navigator.clipboard.writeText(`git checkout -b ${branchName}`);
+                    showToast('success', 'Branch Command Copied', `git checkout -b ${branchName}`);
+                    logActivity(`Created branch command for <strong>${currentTaskId}</strong>`);
+                    break;
+
+                case 'start-all':
+                    moveCardToColumn(currentTaskId, 'progress');
+                    closeModal();
+                    showToast('success', 'Work Started!', `${currentTaskId} is now in progress`);
+                    logActivity(`Started work on <strong>${currentTaskId}</strong>: ${currentTaskTitle}`);
+                    break;
+            }
+        }
+
+        function moveCardToColumn(taskId, targetColumn) {
+            const card = document.querySelector(`[data-id="${taskId}"]`);
+            if (card) {
+                const targetColumnCards = document.querySelector(`[data-column="${targetColumn}"]`);
+                if (targetColumnCards) {
+                    // Update the card's date when moving to progress
+                    if (targetColumn === 'progress') {
+                        const dateEl = card.querySelector('.card-date');
+                        if (dateEl) {
+                            dateEl.textContent = `Started: ${new Date().toLocaleDateString()}`;
+                        } else {
+                            const metaEl = card.querySelector('.card-meta');
+                            const newDate = document.createElement('span');
+                            newDate.className = 'card-date';
+                            newDate.textContent = `Started: ${new Date().toLocaleDateString()}`;
+                            metaEl.appendChild(newDate);
+                        }
+                    }
+                    targetColumnCards.insertBefore(card, targetColumnCards.firstChild);
+                    updateCounts();
+                    saveBoardState();
+                }
+            }
+        }
+
+        function moveToReview(taskId) {
+            moveCardToColumn(taskId, 'review');
+            showToast('info', 'Ready for Review', `${taskId} moved to Review`);
+            logActivity(`<strong>${taskId}</strong> moved to Review`);
+        }
+
+        function markDone(taskId) {
+            moveCardToColumn(taskId, 'done');
+            showToast('success', 'Task Completed!', `${taskId} marked as done`);
+            logActivity(`Completed <strong>${taskId}</strong>`);
+        }
+
+        function updateCounts() {
+            const columns = ['backlog', 'todo', 'progress', 'review', 'done'];
+            let total = 0;
+
+            columns.forEach(col => {
+                const count = document.querySelectorAll(`[data-column="${col}"] .card`).length;
+                const countEl = document.getElementById(`count-${col}`);
+                if (countEl) countEl.textContent = count;
+                total += count;
+            });
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statDone').textContent = document.querySelectorAll('[data-column="done"] .card').length;
+            document.getElementById('statProgress').textContent = document.querySelectorAll('[data-column="progress"] .card').length;
+        }
+
+        function showToast(type, title, message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function logActivity(message) {
+            const container = document.getElementById('activityItems');
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <span class="activity-time">${time}</span>
+                <span class="activity-action">${message}</span>
+            `;
+            container.insertBefore(item, container.firstChild);
+
+            // Keep only last 10 items
+            while (container.children.length > 10) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function saveBoardState() {
+            const state = {};
+            document.querySelectorAll('.column-cards').forEach(column => {
+                const columnName = column.dataset.column;
+                state[columnName] = [];
+                column.querySelectorAll('.card').forEach(card => {
+                    state[columnName].push(card.dataset.id);
+                });
+            });
+            localStorage.setItem('kanbanBoardState', JSON.stringify(state));
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+            showToast('success', 'Saved', 'Board state saved to local storage');
+        }
+
+        function loadBoardState() {
+            const savedState = localStorage.getItem('kanbanBoardState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                Object.keys(state).forEach(columnName => {
+                    const column = document.querySelector(`[data-column="${columnName}"]`);
+                    if (column) {
+                        state[columnName].forEach(cardId => {
+                            const card = document.querySelector(`[data-id="${cardId}"]`);
+                            if (card) {
+                                column.appendChild(card);
+                            }
+                        });
+                    }
+                });
+                updateCounts();
+                logActivity('Loaded saved board state');
+            }
+        }
+
+        function saveBoard() {
+            saveBoardState();
+        }
+
+        // Re-initialize drag after any DOM changes
+        const observer = new MutationObserver(() => {
+            initDragAndDrop();
+        });
+        observer.observe(document.querySelector('.board-container'), { childList: true, subtree: true });
+    </script>
+</body>
+</html>
