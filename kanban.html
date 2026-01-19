@@ -1563,9 +1563,26 @@
         // Initialize drag and drop
         document.addEventListener('DOMContentLoaded', () => {
             initDragAndDrop();
+            initCardClicks();
             updateCounts();
             loadBoardState();
         });
+
+        function initCardClicks() {
+            // Add click handlers to all cards for opening the work modal
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', (e) => {
+                    // Don't trigger if clicking on action buttons or during drag
+                    if (e.target.closest('.card-action-btn') || card.classList.contains('dragging')) {
+                        return;
+                    }
+                    const taskId = card.dataset.id;
+                    const taskTitle = card.querySelector('.card-title')?.textContent || 'Unknown Task';
+                    startWork(taskId, taskTitle);
+                });
+            });
+        }
 
         function initDragAndDrop() {
             const cards = document.querySelectorAll('.card');
