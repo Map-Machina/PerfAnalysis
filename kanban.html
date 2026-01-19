@@ -772,6 +772,52 @@
             font-size: 12px;
         }
 
+        .claude-options {
+            text-align: left;
+        }
+
+        .claude-option {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 8px;
+        }
+
+        .claude-option h3 {
+            color: #f59e0b;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .claude-divider {
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+
+        .claude-cmd {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-family: monospace;
+            font-size: 11px;
+            cursor: pointer;
+            color: #10b981;
+        }
+
+        .claude-cmd:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .copy-cmd-btn {
+            margin-top: 12px;
+            font-size: 12px;
+            padding: 8px 16px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -1664,7 +1710,12 @@
                     // Build Claude Code prompt
                     const claudePrompt = buildClaudePrompt(currentTaskId, currentTaskTitle, component, notes);
 
-                    // Copy to clipboard
+                    // Build the terminal command for launching Claude Code
+                    const escapedPrompt = claudePrompt.replace(/'/g, "'\\''");
+                    const claudeCommand = `claude -p '${escapedPrompt}'`;
+
+                    // Copy BOTH the prompt and the full command to clipboard
+                    // The command can be pasted directly into a terminal to launch a new session
                     navigator.clipboard.writeText(claudePrompt).then(() => {
                         // Move card to in progress
                         moveCardToColumn(currentTaskId, 'progress');
@@ -1673,8 +1724,8 @@
                         showToast('success', 'Copied to Clipboard!', 'Paste in Claude Code to start (Cmd+V)');
                         logActivity(`Started <strong>${currentTaskId}</strong> with Claude Code`);
 
-                        // Show instruction overlay
-                        showClaudeInstructions();
+                        // Show instruction overlay with both options
+                        showClaudeInstructions(claudeCommand);
                     });
                     break;
             }
@@ -1747,7 +1798,7 @@
             return prompt;
         }
 
-        function showClaudeInstructions() {
+        function showClaudeInstructions(claudeCommand) {
             const overlay = document.createElement('div');
             overlay.className = 'claude-overlay';
             overlay.innerHTML = `
@@ -1755,27 +1806,62 @@
                     <div class="claude-icon">🚀</div>
                     <h2>Ready for Claude Code!</h2>
                     <p>The task prompt has been copied to your clipboard.</p>
-                    <div class="claude-steps">
-                        <div class="step">
-                            <span class="step-num">1</span>
-                            <span>Switch to your Claude Code terminal</span>
+
+                    <div class="claude-options">
+                        <div class="claude-option">
+                            <h3>Option A: Paste into existing session</h3>
+                            <div class="claude-steps">
+                                <div class="step">
+                                    <span class="step-num">1</span>
+                                    <span>Switch to your Claude Code terminal</span>
+                                </div>
+                                <div class="step">
+                                    <span class="step-num">2</span>
+                                    <span>Paste with <kbd>Cmd+V</kbd> and press <kbd>Enter</kbd></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="step">
-                            <span class="step-num">2</span>
-                            <span>Paste with <kbd>Cmd+V</kbd> or <kbd>Ctrl+V</kbd></span>
-                        </div>
-                        <div class="step">
-                            <span class="step-num">3</span>
-                            <span>Press <kbd>Enter</kbd> to start</span>
+
+                        <div class="claude-divider">— or —</div>
+
+                        <div class="claude-option">
+                            <h3>Option B: Launch new session</h3>
+                            <div class="claude-steps">
+                                <div class="step">
+                                    <span class="step-num">1</span>
+                                    <span>Open a new terminal in the project directory</span>
+                                </div>
+                                <div class="step">
+                                    <span class="step-num">2</span>
+                                    <span>Run: <code class="claude-cmd" onclick="copyCommand(this)" title="Click to copy">claude -p "..."</code></span>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary copy-cmd-btn" onclick="copyClaudeCommand()">
+                                📋 Copy Full Command
+                            </button>
                         </div>
                     </div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="btn btn-success">Got it!</button>
+
+                    <button onclick="this.parentElement.parentElement.remove()" class="btn btn-success" style="margin-top: 16px;">Got it!</button>
                 </div>
             `;
+
+            // Store command for copying
+            overlay.dataset.command = claudeCommand;
             document.body.appendChild(overlay);
 
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => overlay.remove(), 5000);
+            // Auto-dismiss after 10 seconds (longer since more options)
+            setTimeout(() => overlay.remove(), 10000);
+        }
+
+        function copyClaudeCommand() {
+            const overlay = document.querySelector('.claude-overlay');
+            const command = overlay?.dataset.command;
+            if (command) {
+                navigator.clipboard.writeText(command).then(() => {
+                    showToast('success', 'Command Copied!', 'Paste in terminal to launch Claude Code');
+                });
+            }
         }
 
         function moveCardToColumn(taskId, targetColumn) {
