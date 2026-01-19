@@ -1,0 +1,161 @@
+================================================================================
+                    PERFCOLLECTOR TOOLS COMPARISON ANALYSIS
+================================================================================
+
+Generated: 2026-01-16
+Repositories Compared:
+  1. businessperformancetuning/perfcollector (Original)
+  2. Map-Machina/PerfCollector1 (Enhanced Fork)
+  3. businessperformancetuning/perfcollector2 (Reimagined)
+
+================================================================================
+                              OVERVIEW
+================================================================================
+
++---------------------------+------------------+------------------+------------------+
+| Aspect                    | perfcollector    | PerfCollector1   | perfcollector2   |
++---------------------------+------------------+------------------+------------------+
+| Total Tools               | 8                | 9                | 4                |
+| Architecture              | Enterprise       | Enterprise       | Lightweight      |
+|                           | with encryption  | + REST API       | simplified       |
+| Database                  | "Not functional" | PostgreSQL       | File-based       |
+|                           |                  | integration      | (JSON/CSV)       |
+| Licensing                 | Yes (siteid +    | Yes (siteid +    | No               |
+|                           | sitename + MAC)  | sitename + MAC)  |                  |
+| Encryption                | Yes              | Yes              | No (API key)     |
+| REST API                  | No               | Yes (perfapi)    | No               |
++---------------------------+------------------+------------------+------------------+
+
+================================================================================
+                       TOOL-BY-TOOL COMPARISON
+================================================================================
+
+DATA COLLECTION TOOLS
+--------------------------------------------------------------------------------
+Tool          | perfcollector | PerfCollector1 | perfcollector2 | Purpose
+--------------|---------------|----------------|----------------|----------------
+perfcollect   | YES           | YES            | NO             | Primary collector
+pcc           | NO            | NO             | YES            | Lightweight client
+perfpush      | YES           | YES            | NO             | Push to server
+pcd           | NO            | NO             | YES            | Collector daemon
+
+DATA PROCESSING TOOLS
+--------------------------------------------------------------------------------
+Tool          | perfcollector | PerfCollector1 | perfcollector2 | Purpose
+--------------|---------------|----------------|----------------|----------------
+perfreport    | YES           | YES            | NO             | Generate reports
+pcprocess     | NO            | NO             | YES            | JSON to CSV
+perfprocess   | YES           | YES            | NO             | Data processing
+
+WORKLOAD REPLAY TOOLS
+--------------------------------------------------------------------------------
+Tool          | perfcollector | PerfCollector1 | perfcollector2 | Purpose
+--------------|---------------|----------------|----------------|----------------
+perfcpumeasure| YES           | YES            | NO             | Measure CPU patterns
+perfreplay    | YES           | YES            | NO             | Replay workloads
+
+ADMINISTRATION TOOLS
+--------------------------------------------------------------------------------
+Tool          | perfcollector | PerfCollector1 | perfcollector2 | Purpose
+--------------|---------------|----------------|----------------|----------------
+perfctl       | YES           | YES            | NO             | Enterprise admin
+pcctl         | NO            | NO             | YES            | Lightweight admin
+perflicense   | YES           | YES            | NO             | License management
+
+API/SERVER TOOLS
+--------------------------------------------------------------------------------
+Tool          | perfcollector | PerfCollector1 | perfcollector2 | Purpose
+--------------|---------------|----------------|----------------|----------------
+perfapi       | NO            | YES            | NO             | REST API server
+
+================================================================================
+                          KEY DIFFERENCES
+================================================================================
+
+1. REST API AVAILABILITY
+--------------------------------------------------------------------------------
+   - perfcollector:  No REST API
+   - PerfCollector1: Includes 'perfapi' - full REST server with endpoints:
+                     * /status - Server status
+                     * /collections - List/get collections
+                     * /samples - Query time-series data
+                     * PostgreSQL integration
+   - perfcollector2: No REST API (uses HTTP for trickle mode only)
+
+2. DATABASE SUPPORT
+--------------------------------------------------------------------------------
+   - perfcollector:  Listed but "currently not functional"
+   - PerfCollector1: Working PostgreSQL integration via 'perfapi'
+   - perfcollector2: No database - uses JSON files converted to CSV
+
+3. SECURITY MODEL
+--------------------------------------------------------------------------------
+   - perfcollector/PerfCollector1:
+     * Full encryption with siteid + sitename + MAC address
+     * License file required ('perflicense')
+     * Encrypted data transfer
+
+   - perfcollector2:
+     * Simple API key authentication (min 8 chars)
+     * Keys stored in ~/.pcd/apikeys
+     * No encryption layer
+
+4. CONFIGURATION APPROACH
+--------------------------------------------------------------------------------
+   - perfcollector/PerfCollector1: Command-line flags (-h for help)
+
+   - perfcollector2: Environment variables
+     Examples:
+       PCC_DURATION=24h PCC_FREQUENCY=15s PCC_COLLECTION=~/pcc.json pcc
+       PCD_LOGLEVEL=trace LISTENADDRESS=localhost:8080 pcd
+
+5. WORKLOAD REPLAY
+--------------------------------------------------------------------------------
+   - perfcollector/PerfCollector1: Full replay with perfcpumeasure + perfreplay
+   - perfcollector2: Not supported
+
+================================================================================
+                            SIMILARITIES
+================================================================================
+
+1. Core Collection Concept: All collect Linux performance metrics from /proc
+2. Build System: All use 'make' for building
+3. Go Language: All written in Go
+4. Client-Server Mode: All support pushing data to a central server
+5. JSON Output: All can output to JSON format
+6. Trickle/Push Mode: All support streaming data vs batch collection
+
+================================================================================
+                         EVOLUTION SUMMARY
+================================================================================
+
+perfcollector (Original)
+    |
+    +---> PerfCollector1 (Fork/Enhancement)
+    |     |-- Added: perfapi REST server
+    |     +-- Added: Working PostgreSQL integration
+    |
+    +---> perfcollector2 (Reimagining)
+          |-- Simplified: 4 tools instead of 8-9
+          |-- Removed: Encryption, licensing, workload replay
+          |-- Added: Environment variable configuration
+          +-- Focus: Lightweight, easy deployment
+
+================================================================================
+                      USE CASE RECOMMENDATIONS
+================================================================================
+
++---------------------------------------------+--------------------------------+
+| Scenario                                    | Recommended Tool               |
++---------------------------------------------+--------------------------------+
+| Enterprise with security requirements       | perfcollector or PerfCollector1|
+| Need REST API for integrations              | PerfCollector1                 |
+| Need workload replay/benchmarking           | perfcollector or PerfCollector1|
+| Simple monitoring, quick deployment         | perfcollector2                 |
+| Integration with external dashboard         | PerfCollector1 (has perfapi)   |
+| Air-gapped or minimal footprint             | perfcollector2                 |
++---------------------------------------------+--------------------------------+
+
+================================================================================
+                              END OF ANALYSIS
+================================================================================
