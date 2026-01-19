@@ -1155,22 +1155,6 @@
                     </div>
                     <div class="card-notes">Lines 24-30 have hardcoded storeVol, netIface, machName, UUID, loc</div>
                 </div>
-                <div class="card" data-component="automated-reporting" data-id="T-002" draggable="true">
-                    <div class="card-actions">
-                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-002', 'Create CLI wrapper for reporting.Rmd')" title="Start Work">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="card-id">T-002</div>
-                    <div class="card-title">Create CLI wrapper for reporting.Rmd</div>
-                    <div class="card-meta">
-                        <span class="card-component component-automated-reporting">automated-Reporting</span>
-                        <span class="card-priority priority-high">High</span>
-                    </div>
-                    <div class="card-notes">Enable command-line report generation</div>
-                </div>
                 <div class="card" data-component="perfcollector2" data-id="T-004" draggable="true">
                     <div class="card-actions">
                         <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-004', 'Add /proc/vmstat parsing to pcc')" title="Start Work">
@@ -1381,6 +1365,15 @@
                 <span class="column-count" id="count-done">10</span>
             </div>
             <div class="column-cards" data-column="done">
+                <div class="card" data-component="automated-reporting" data-id="T-002" draggable="true">
+                    <div class="card-id">T-002</div>
+                    <div class="card-title">Create CLI wrapper for reporting.Rmd</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-date">2026-01-19</span>
+                    </div>
+                    <div class="card-notes">generate_report.R with --config, --format, --output</div>
+                </div>
                 <div class="card" data-component="integration" data-id="T-003" draggable="true">
                     <div class="card-id">T-003</div>
                     <div class="card-title">Integrate perfcpumeasure into ecosystem</div>
