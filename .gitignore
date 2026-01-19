@@ -1,2 +1,8 @@
 .DS_Store
 *.backup
+
+# Local tool configurations
+.claude/
+.mcp.json
+.playwright-mcp/
+pcc_v104.sh
