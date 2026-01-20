@@ -1136,7 +1136,7 @@
                     </svg>
                     Todo
                 </span>
-                <span class="column-count" id="count-todo">8</span>
+                <span class="column-count" id="count-todo">4</span>
             </div>
             <div class="column-cards" data-column="todo">
                 <div class="card" data-component="automated-reporting" data-id="T-001" draggable="true">
@@ -1155,22 +1155,6 @@
                     </div>
                     <div class="card-notes">Lines 24-30 have hardcoded storeVol, netIface, machName, UUID, loc</div>
                 </div>
-                <div class="card" data-component="perfcollector2" data-id="T-004" draggable="true">
-                    <div class="card-actions">
-                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-004', 'Add /proc/vmstat parsing to pcc')" title="Start Work">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="card-id">T-004</div>
-                    <div class="card-title">Add /proc/vmstat parsing to pcc</div>
-                    <div class="card-meta">
-                        <span class="card-component component-perfcollector2">perfcollector2</span>
-                        <span class="card-priority priority-medium">Medium</span>
-                    </div>
-                    <div class="card-notes">Memory management metrics</div>
-                </div>
                 <div class="card" data-component="perfcollector2" data-id="T-005" draggable="true">
                     <div class="card-actions">
                         <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-005', 'Implement upload retry logic')" title="Start Work">
@@ -1186,22 +1170,6 @@
                         <span class="card-priority priority-medium">Medium</span>
                     </div>
                     <div class="card-notes">Improve reliability</div>
-                </div>
-                <div class="card" data-component="automated-reporting" data-id="T-010" draggable="true">
-                    <div class="card-actions">
-                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('T-010', 'Add data.table optimization')" title="Start Work">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="card-id">T-010</div>
-                    <div class="card-title">Add data.table optimization to reporting.Rmd</div>
-                    <div class="card-meta">
-                        <span class="card-component component-automated-reporting">automated-Reporting</span>
-                        <span class="card-priority priority-medium">Medium</span>
-                    </div>
-                    <div class="card-notes">Replace data.frame for 10-100x speedup</div>
                 </div>
                 <div class="card" data-component="xatbackend" data-id="T-011" draggable="true">
                     <div class="card-actions">
@@ -1314,9 +1282,41 @@
                     </svg>
                     Review
                 </span>
-                <span class="column-count" id="count-review">2</span>
+                <span class="column-count" id="count-review">4</span>
             </div>
             <div class="column-cards" data-column="review">
+                <div class="card" data-component="perf-dashboard" data-id="R-003" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('R-003')" title="Mark Done">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">R-003</div>
+                    <div class="card-title">Collection visualization with time-series and radar charts</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perf-dashboard">perf-dashboard</span>
+                        <span class="card-date">Completed: 2026-01-20</span>
+                    </div>
+                    <div class="card-notes">CollectionViewer page, toggle Time Series/Radar, detailed metrics table</div>
+                </div>
+                <div class="card" data-component="perfcollector2" data-id="T-004" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('T-004')" title="Mark Done">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">T-004</div>
+                    <div class="card-title">Add /proc/vmstat parsing to pcc</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-date">Completed: 2026-01-19</span>
+                    </div>
+                    <div class="card-notes">VMStat parser, measurement struct, cube function, pcprocess CSV output</div>
+                </div>
                 <div class="card" data-component="perf-dashboard" data-id="R-001" draggable="true">
                     <div class="card-actions">
                         <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('R-001')" title="Mark Done">
@@ -1362,9 +1362,18 @@
                     </svg>
                     Done
                 </span>
-                <span class="column-count" id="count-done">10</span>
+                <span class="column-count" id="count-done">11</span>
             </div>
             <div class="column-cards" data-column="done">
+                <div class="card" data-component="automated-reporting" data-id="T-010" draggable="true">
+                    <div class="card-id">T-010</div>
+                    <div class="card-title">Add data.table optimization to reporting.Rmd</div>
+                    <div class="card-meta">
+                        <span class="card-component component-automated-reporting">automated-Reporting</span>
+                        <span class="card-date">2026-01-19</span>
+                    </div>
+                    <div class="card-notes">fread/fwrite, setkey merges, vectorized .I</div>
+                </div>
                 <div class="card" data-component="automated-reporting" data-id="T-002" draggable="true">
                     <div class="card-id">T-002</div>
                     <div class="card-title">Create CLI wrapper for reporting.Rmd</div>
