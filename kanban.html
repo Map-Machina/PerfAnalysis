@@ -1018,21 +1018,6 @@
                         <span class="card-priority priority-medium">Medium</span>
                     </div>
                 </div>
-                <div class="card" data-component="perfcollector2" data-id="B-010" draggable="true">
-                    <div class="card-actions">
-                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-010', 'perfcpumeasure integration')" title="Start Work">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="card-id">B-010</div>
-                    <div class="card-title">perfcpumeasure integration (from PerfCollector1)</div>
-                    <div class="card-meta">
-                        <span class="card-component component-perfcollector2">perfcollector2</span>
-                        <span class="card-priority priority-high">High</span>
-                    </div>
-                </div>
                 <div class="card" data-component="perfcollector2" data-id="B-011" draggable="true">
                     <div class="card-actions">
                         <button class="card-action-btn start-work" onclick="event.stopPropagation(); startWork('B-011', 'perfreplay workload replay')" title="Start Work">
@@ -1282,9 +1267,25 @@
                     </svg>
                     Review
                 </span>
-                <span class="column-count" id="count-review">4</span>
+                <span class="column-count" id="count-review">5</span>
             </div>
             <div class="column-cards" data-column="review">
+                <div class="card" data-component="perfcollector2" data-id="B-010" draggable="true">
+                    <div class="card-actions">
+                        <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('B-010')" title="Mark Done">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-id">B-010</div>
+                    <div class="card-title">perfcpumeasure integration (from PerfCollector1)</div>
+                    <div class="card-meta">
+                        <span class="card-component component-perfcollector2">perfcollector2</span>
+                        <span class="card-date">Completed: 2026-01-20</span>
+                    </div>
+                    <div class="card-notes">CLI tool, pcd /v1/loadtest endpoint, XATSimplified API, perf-dashboard LoadTest pages</div>
+                </div>
                 <div class="card" data-component="perf-dashboard" data-id="R-003" draggable="true">
                     <div class="card-actions">
                         <button class="card-action-btn start-work" onclick="event.stopPropagation(); markDone('R-003')" title="Mark Done">
