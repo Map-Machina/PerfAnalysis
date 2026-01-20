@@ -21,6 +21,17 @@
 
 # ⛔ MANDATORY FIRST ACTION - READ THIS BEFORE DOING ANYTHING ⛔
 
+## Developer Environment
+
+**IMPORTANT**: The developer (Dan McDougal) uses a **Mac (macOS)**. Always provide Mac-compatible commands:
+- Use `Cmd` instead of `Ctrl` for keyboard shortcuts (e.g., `Cmd+R` to refresh, `Cmd+Shift+I` for DevTools)
+- Use `open` instead of `start` to open files/URLs
+- Use Mac paths (`/Users/...`) not Windows paths
+- Terminal commands should be bash/zsh compatible
+- For browser DevTools: `Cmd+Option+I` or right-click → Inspect
+
+---
+
 ## YOU MUST DECLARE AGENTS AND MCP SERVERS BEFORE EVERY RESPONSE
 
 **This is not a guideline. This is not a suggestion. This is a HARD REQUIREMENT.**
