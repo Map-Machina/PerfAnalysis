@@ -569,3 +569,109 @@ Navigate to `/loadtest` in the dashboard to see the LoadTest comparison page wit
 
 ---
 
+## Session: 2026-01-21
+
+### Entry 15 - Live View Feature with Trickle Session Management
+
+**User Request:**
+> I would like a live view option where any current trickle collections are displaying live. When these are complete, they need to be saved by collector and then by date. IE two dropdowns. collector which would populate the date dropdown.
+
+**Agent(s) Invoked:** Backend Python Developer, API Architect
+
+**MCP Server(s):** postgres (attempted, used Django ORM instead)
+
+**Response:**
+Implemented a complete trickle session management system for live view and historical data organization.
+
+**New Model - `TrickleSession`** ([collectors/models.py:509-577](XATSimplified/collectors/models.py#L509-L577)):
+- Tracks active and completed trickle collection sessions
+- Status: `active`, `completed`, `saved`
+- Links to Collector via ForeignKey
+- Stores timing (started_at, ended_at, last_data_at), sample_count
+- Auto-created when trickle data arrives
+
+**New API Endpoints** ([collectors/api/dashboard_views.py](XATSimplified/collectors/api/dashboard_views.py)):
+
+1. `GET /dashboard/api/trickle/active/` - **ActiveTrickleSessionsAPI**
+   - Lists all currently active trickle sessions across all collectors
+   - Shows live preview with avg CPU/memory utilization
+   - Perfect for "Live View" dashboard panel
+
+2. `GET /dashboard/api/collectors/<uuid>/sessions/` - **CollectorSessionsAPI**
+   - Lists all sessions for a collector grouped by date
+   - Populates first dropdown (collector) → second dropdown (dates)
+   - Returns `sessions_by_date` dictionary
+
+3. `GET /dashboard/api/collectors/<uuid>/session-dates/` - **CollectorSessionDatesAPI**
+   - Returns list of dates with saved sessions
+   - Used to populate date dropdown
+
+4. `GET /dashboard/api/sessions/<uuid>/` - **SessionDataAPI**
+   - Returns full metrics data for a session
+   - Same format as live metrics API (timestamps, cpu, memory, disk, network)
+
+5. `POST /dashboard/api/sessions/<uuid>/complete/` - **CompleteSessionAPI**
+   - Manually mark active session as completed
+   - Optional name parameter
+
+6. `POST /dashboard/api/trickle/check-inactive/` - **CheckAndCompleteInactiveSessionsAPI**
+   - Auto-complete sessions with no data for timeout period
+   - Configurable timeout (default 2 minutes)
+
+**Modified TrickleView** ([collectors/api/views.py:1793-1842](XATSimplified/collectors/api/views.py#L1793-L1842)):
+- Now auto-creates TrickleSession when data arrives
+- Updates session.last_data_at and sample_count on each POST
+- Returns session_id in response
+
+**Files Modified:**
+- `XATSimplified/collectors/models.py` - Added TrickleSession model
+- `XATSimplified/collectors/api/dashboard_views.py` - Added 6 new API classes
+- `XATSimplified/collectors/api/dashboard_urls.py` - Added 6 new routes
+- `XATSimplified/collectors/api/views.py` - Modified TrickleView post() method
+
+**Migration Created:**
+- `collectors/migrations/0005_add_trickle_session.py`
+
+**API Response Examples:**
+
+Active sessions:
+```json
+{
+  "active_count": 2,
+  "sessions": [
+    {
+      "session_id": "abc123...",
+      "collector_id": "xyz789...",
+      "collector_name": "pcd-server-01",
+      "started_at": "2026-01-21T15:48:18+00:00",
+      "last_data_at": "2026-01-21T16:18:13+00:00",
+      "sample_count": 360,
+      "avg_cpu_percent": 45.2,
+      "avg_mem_percent": 67.8
+    }
+  ]
+}
+```
+
+Collector sessions (for dropdowns):
+```json
+{
+  "collector_id": "xyz789...",
+  "collector_name": "pcd-server-01",
+  "dates": ["2026-01-21", "2026-01-20"],
+  "sessions_by_date": {
+    "2026-01-21": [
+      {"session_id": "...", "name": "Trickle 15:48", "status": "completed", "sample_count": 360}
+    ]
+  },
+  "total_sessions": 2
+}
+```
+
+**Verified Working:**
+- All 6 API endpoints tested with JWT authentication
+- Sessions created from existing PerformanceMetric data
+- Session data retrieval returns full metric arrays
+
+---
+
