@@ -32,6 +32,28 @@
 
 ---
 
+## ⛔ CRITICAL: XATbackend vs XATSimplified
+
+```
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║   ⚠️  XATbackend IS FOR REFERENCE ONLY - DO NOT USE FOR PRODUCTION CODE    ║
+║                                                                            ║
+║   ALL production functionality MUST reside in XATSimplified.               ║
+║                                                                            ║
+║   • XATbackend/     → REFERENCE ONLY (legacy, do not modify for prod)     ║
+║   • XATSimplified/  → PRODUCTION CODE (all new features go here)          ║
+║                                                                            ║
+║   When implementing backend features:                                      ║
+║   1. Review XATbackend for patterns/reference if needed                   ║
+║   2. Implement ALL functionality in XATSimplified                         ║
+║   3. NEVER add production code to XATbackend                              ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
 ## YOU MUST DECLARE AGENTS AND MCP SERVERS BEFORE EVERY RESPONSE
 
 **This is not a guideline. This is not a suggestion. This is a HARD REQUIREMENT.**
