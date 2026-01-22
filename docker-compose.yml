@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL Database for XATbackend
+  # PostgreSQL Database for XATSimplified
   postgres:
     image: postgres:12.2
     container_name: perfanalysis-postgres
@@ -18,21 +18,19 @@ services:
       timeout: 5s
       retries: 5
 
-  # XATbackend Django Application
-  xatbackend:
-    build:
-      context: ./XATbackend
-      dockerfile: Dockerfile.dev
-    container_name: perfanalysis-xatbackend
+  # XATSimplified Django Application
+  xatsimplified:
+    image: xatsimplified-web:latest
+    container_name: perfanalysis-xatsimplified
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./XATbackend:/app
+      - ./XATSimplified:/app
       - ~/.oci:/root/.oci:ro  # Mount OCI config for cloud provider integration
       - ~/.ssh:/root/.ssh:ro  # Mount SSH keys for remote deployment
     ports:
       - "8000:8000"
     env_file:
-      - ./XATbackend/.env
+      - ./XATSimplified/.env
     environment:
       - DEBUG=True
       - DATABASE_URL=postgresql://perfadmin:devpassword123@postgres:5432/perfanalysis
