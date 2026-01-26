@@ -66,18 +66,9 @@ services:
       timeout: 10s
       retries: 3
 
-  # R Development Environment
-  r-dev:
-    build:
-      context: ./automated-Reporting
-      dockerfile: Dockerfile.dev
-    container_name: perfanalysis-r-dev
-    volumes:
-      - ./automated-Reporting:/workspace
-    working_dir: /workspace
-    command: tail -f /dev/null  # Keep container running
-    environment:
-      - R_HOME=/usr/lib/R
+  # perf-dashboard React Frontend (run separately with npm run dev)
+  # Visualization is handled by React/Chart.js in perf-dashboard
+  # No R components - all visualization in frontend
 
 volumes:
   postgres_data:
