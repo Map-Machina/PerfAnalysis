@@ -84,7 +84,7 @@
 | **Go Backend Developer** | perfcollector2, Go code, /proc parsing |
 | **Backend Python Developer** | XATbackend, Django, Python code |
 | **Django Tenants Specialist** | Multi-tenancy, tenant isolation |
-| **R Performance Expert** | automated-Reporting, R code, ggplot2 |
+| **Frontend Developer** | perf-dashboard, React, Chart.js, TypeScript |
 | **Linux Systems Engineer** | /proc filesystem, system metrics |
 | **Security Architect** | Authentication, authorization, OWASP |
 | **DevOps Engineer** | Docker, Azure, CI/CD, deployment |
@@ -158,14 +158,14 @@
 ### Why This Matters
 
 The PerfAnalysis ecosystem is a complex, multi-component system spanning:
-- **3 programming languages** (Go, Python, R)
-- **3 major frameworks** (Django, R Markdown, Go net/http)
+- **3 programming languages** (Go, Python, TypeScript)
+- **3 major frameworks** (Django, React, Go net/http)
 - **2 database systems** (PostgreSQL, Oracle)
 - **3 deployment environments** (Linux servers, Azure cloud, local development)
 
 Without proper agent routing, you will:
 - ❌ Apply Django patterns to Go code
-- ❌ Use R optimization techniques on Python code
+- ❌ Use React optimization techniques on Python code
 - ❌ Implement single-tenant solutions in multi-tenant systems
 - ❌ Violate security boundaries between components
 - ❌ Break data flow contracts between systems
@@ -249,8 +249,8 @@ START: What are you working on?
 │  └─► Primary: Backend Python Developer
 │     Secondary: Django Tenants Specialist (for multi-tenancy)
 │
-├─ "I'm working on automated-Reporting (R code)"
-│  └─► Primary: R Performance Expert
+├─ "I'm working on perf-dashboard (React/TypeScript code)"
+│  └─► Primary: Frontend Developer
 │     Secondary: Data Architect (for data transformation)
 │
 ├─ "I'm integrating between components"
@@ -319,7 +319,7 @@ Claude: "I'll help you add /proc/vmstat metrics using the proper agent workflow:
 3. Data Quality Engineer: Add validation rules
 4. Integration Architect: Ensure proper upload format
 5. Backend Python Developer: Update XATbackend schema
-6. R Performance Expert: Add vmstat visualization to reports
+6. Frontend Developer: Add vmstat visualization to reports
 
 Let's start:
 
@@ -388,7 +388,7 @@ Step 2 - Security Architect: Use Bearer token authentication...
 #### ❌ INCORRECT Approach
 
 ```
-User: "My R report is slow."
+User: "My dashboard is slow."
 
 Claude: "Try using vectorization instead of loops."
 ```
@@ -396,23 +396,23 @@ Claude: "Try using vectorization instead of loops."
 **Why This Fails**:
 - Generic advice without profiling
 - No understanding of data source
-- No consideration of data.table vs data.frame
+- No consideration of React Query vs TypeScript interface
 - Missing specific optimization techniques
 - No measurement of improvement
 
 #### ✅ CORRECT Approach
 
 ```
-User: "My R report is taking 5 minutes to generate for 100K rows of CPU data."
+User: "My dashboard is taking 5 seconds to render 100K rows of CPU data."
 
-Claude: "As the R Performance Expert: Let me analyze this performance issue.
+Claude: "As the Frontend Developer: Let me analyze this performance issue.
 
 First, I need to understand:
-1. Are you using data.frame or data.table?
+1. Are you using TypeScript interface or React Query?
 2. What operations are slowest?
 3. Are you reading from database or CSV?
 
-R Performance Expert: Use profvis to identify bottlenecks...
+Frontend Developer: Use React DevTools to identify bottlenecks...
 Data Architect: Consider pre-aggregation in the database...
 [continues with specific, measurable optimizations]"
 ```
@@ -420,7 +420,7 @@ Data Architect: Consider pre-aggregation in the database...
 **Why This Succeeds**:
 - Asks diagnostic questions
 - Uses profiling tools
-- Applies R-specific expertise
+- Applies React-specific expertise
 - Considers database optimization
 - Provides measurable improvements
 
@@ -442,13 +442,13 @@ The PerfAnalysis ecosystem integrates three independent components into a unifie
 ┌──────────────────┐         ┌──────────────────┐         ┌──────────────────┐
 │  perfcollector2  │────────▶│   XATbackend     │────────▶│   automated-     │
 │   (Go 1.21+)     │         │ (Django 3.2.3)   │         │   Reporting      │
-│                  │         │                  │         │   (R 4.5.2)      │
+│                  │         │                  │         │   (React 18)      │
 │ ROLE:            │         │ ROLE:            │         │ ROLE:            │
 │ Data Collection  │         │ User Portal      │         │ Visualization    │
 │                  │         │ Data Storage     │         │ Analysis         │
 │ COMPONENTS:      │         │                  │         │                  │
 │ • pcc (client)   │         │ FEATURES:        │         │ FEATURES:        │
-│ • pcd (server)   │         │ • Multi-tenancy  │         │ • R Markdown     │
+│ • pcd (server)   │         │ • Multi-tenancy  │         │ • React     │
 │ • pcprocess      │         │ • User auth      │         │ • Time-series    │
 │ • pcctl (admin)  │         │ • Machine mgmt   │         │ • Percentiles    │
 │                  │         │ • PostgreSQL     │         │ • Radar charts   │
@@ -541,31 +541,31 @@ STAGE 2: UPLOAD & STORAGE (XATbackend)
 OUTPUT: Queryable database, CSV export
 
 
-STAGE 3: VISUALIZATION (automated-Reporting)
+STAGE 3: VISUALIZATION (perf-dashboard)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┌─────────────────┐
 │ CSV Export      │  From XATbackend or direct from perfcollector2
 └────────┬────────┘
          │
-         │ R reads CSV files
+         │ React fetches from API
          │
          ▼
 ┌──────────────────────┐
-│ R Markdown Report    │  reporting.Rmd (2,039 lines)
+│ React Report    │  React components (2,039 lines)
 │                      │
 │ Analysis:            │
-│ • Time-series charts │  ← ggplot2 visualizations
+│ • Time-series charts │  ← Chart.js visualizations
 │ • Percentile stats   │  ← 95th, 97.5th, 99th, 100th
 │ • Resource breakdown │  ← Per-CPU, per-device analysis
 │ • Radar charts       │  ← Multi-metric correlation
 │ • Summary tables     │  ← Key metrics and stats
 │                      │
 │ Packages:            │
-│ • ggplot2            │  ← Charting
-│ • dplyr              │  ← Data manipulation
-│ • data.table         │  ← High-performance operations
-│ • lubridate          │  ← Date/time handling
-│ • fmsb               │  ← Radar charts
+│ • Chart.js            │  ← Charting
+│ • lodash              │  ← Data manipulation
+│ • React Query         │  ← High-performance operations
+│ • date-fns           │  ← Date/time handling
+│ • recharts           │  ← Radar charts
 └──────────┬───────────┘
            │
            │ Renders to output format
@@ -711,41 +711,31 @@ OUTPUT: Performance analysis reports
 
 ---
 
-### Component 3: automated-Reporting (R-based Visualization)
+### Component 3: perf-dashboard (React-based Visualization)
 
-**Location**: `/Users/danmcdougal/projects/PerfAnalysis/automated-Reporting/`
+**Location**: `/Users/danmcdougal/projects/PerfAnalysis/perf-dashboard/`
 
 **Purpose**: Generate comprehensive performance analysis reports with time-series visualizations, percentile analysis, and actionable insights
 
 **Technology Stack**:
-- **Language**: R 4.5.2+
-- **Reporting**: R Markdown (rmarkdown package)
-- **Visualization**: ggplot2 (charts), fmsb (radar charts)
-- **Data Manipulation**: dplyr (transformations), data.table (performance)
-- **Date/Time**: lubridate
-- **Output**: HTML (recommended), PDF (requires LaTeX)
-- **Future**: Oracle 26ai integration for direct database access
+- **Language**: TypeScript
+- **Framework**: React 18 with Vite
+- **Visualization**: Chart.js, Recharts
+- **Data Fetching**: React Query (@tanstack/react-query)
+- **Data Manipulation**: lodash, date-fns
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Output**: Interactive web dashboard
 
 **Architecture**:
 
-1. **Main Report** (`reporting.Rmd`):
-   - 2,039 lines of R Markdown
-   - Input: CSV files from perfcollector2 or XATbackend
-   - Output: HTML/PDF with comprehensive analysis
-   - Configuration: Hardcoded variables (lines 24-30) - planned for replacement
+1. **Pages**:
+   - Home: Dashboard overview with key metrics
+   - Live View: Real-time trickle collection monitoring
+   - Compare: Side-by-side benchmark comparison
+   - Replay: Historical data playback
 
-2. **Hardcoded Configuration** (Current Limitation):
-   ```r
-   storeVol <- "sda"              # Storage device name
-   netIface <- "ens33"            # Network interface name
-   machName <- "machine001"       # Machine identifier
-   UUID <- "0001-001-002"         # Unique identifier
-   loc <- ("testData/proc/")      # Data directory path
-   ```
-   - Issue: Must manually edit for each machine
-   - Solution: YAML configuration system (planned)
-
-3. **Report Sections**:
+2. **Dashboard Sections**:
    - Executive Summary: Key metrics and overall health
    - CPU Analysis: Per-core utilization, percentiles, time-series
    - Memory Analysis: Usage patterns, buffer/cache breakdown
@@ -754,42 +744,35 @@ OUTPUT: Performance analysis reports
    - Radar Charts: Multi-metric correlation visualization
    - Detailed Tables: Raw statistics and percentile breakdowns
 
-4. **Data Flow**:
-   - Input: CSV files with columns (timestamp, metric_name, metric_value)
-   - Processing: data.frame operations (planned: data.table migration)
-   - Visualization: ggplot2 + custom themes
-   - Output: Self-contained HTML or PDF report
+3. **Data Flow**:
+   - Input: REST API from XATSimplified backend
+   - Processing: React Query for caching and state management
+   - Visualization: Chart.js + Recharts components
+   - Output: Interactive web dashboard
 
-5. **R Packages** (DESCRIPTION file):
-   - ggplot2 (>= 3.4.0) - Visualization
-   - dplyr (>= 1.1.0) - Data manipulation
-   - lubridate (>= 1.9.0) - Date/time handling
-   - fmsb (>= 0.7.6) - Radar charts
-   - knitr (>= 1.45) - Report knitting
-   - rmarkdown (>= 2.20) - Report rendering
+4. **NPM Packages** (package.json):
+   - react (^18.2.0) - UI framework
+   - chart.js (^4.5.1) - Visualization
+   - recharts - Additional charts
+   - @tanstack/react-query (^5.17.9) - Data fetching
+   - date-fns (^3.6.0) - Date/time handling
+   - axios (^1.6.5) - HTTP client
 
-6. **Planned Enhancements**:
-   - CLI interface (reporting_cli.R)
-   - YAML configuration system
-   - Device auto-detection
-   - Data validation framework
-   - Oracle 26ai direct integration
-   - Multi-machine comparison reports
-
-**Test Data**:
-- Location: `testData/proc/`
-- Files: stat, meminfo, diskstats, net/dev
-- Format: Matches Linux /proc filesystem structure
+5. **Planned Enhancements**:
+   - Real-time WebSocket updates
+   - Export to PDF/CSV
+   - Multi-machine comparison views
+   - Customizable dashboards
 
 **Key Files**:
-- `reporting.Rmd` - Main report template
-- `DESCRIPTION` - R package dependencies
-- `renv_init.R` - Reproducible environment setup
-- `testData/` - Sample data for testing
-- `agents/` - 21 specialized agents (shared with parent project)
+- `src/pages/` - Page components (Home, LiveView, Compare, Replay)
+- `src/components/charts/` - Chart components (TimeSeriesChart, RadarChart)
+- `src/api/` - API client functions
+- `src/hooks/` - Custom React hooks
+- `package.json` - npm dependencies
 
 **Relevant Agents**:
-- Primary: R Performance Expert
+- Primary: Frontend Developer
 - Secondary: Data Architect, Time-Series Architect, Oracle Developer (future), Automation Engineer, Configuration Management Specialist
 
 ---
@@ -905,7 +888,7 @@ tenant-abc-123-def
 
 ---
 
-### Integration Point 2: XATbackend → automated-Reporting
+### Integration Point 2: XATbackend → perf-dashboard
 
 **Purpose**: Export performance data from portal for visualization and analysis
 
@@ -927,8 +910,8 @@ timestamp,machine_id,cpu_user,cpu_system,cpu_idle,cpu_iowait,mem_total,mem_used,
 1704369600,server01,25.5,10.2,64.3,0.0,32768,16384,16384,512,8192,1048576,2097152,100,200,1073741824,536870912,100000,50000
 ```
 
-**CSV Format Requirements** (for R consumption):
-- Column names must match R variable expectations
+**CSV Format Requirements** (for frontend consumption):
+- Column names must match API response expectations
 - Timestamps in Unix epoch or ISO 8601
 - Numeric fields without thousand separators
 - UTF-8 encoding
@@ -937,37 +920,37 @@ timestamp,machine_id,cpu_user,cpu_system,cpu_idle,cpu_iowait,mem_total,mem_used,
 **Alternative: Manual Export**:
 - User downloads CSV from web portal
 - Places in `testData/proc/` directory (or custom location)
-- Updates `reporting.Rmd` configuration (lines 24-30)
-- Runs `rmarkdown::render("reporting.Rmd")`
+- Updates `React components` configuration (lines 24-30)
+- Runs `vite::render("React components")`
 
-**R Integration**:
+**React Integration**:
 ```r
-# R reads the exported CSV
+# React fetches from API
 data <- read.csv("export_server01_20260104.csv", stringsAsFactors = FALSE)
 
 # Convert timestamp
 data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 
 # Process and visualize
-# ... (reporting.Rmd logic)
+# ... (React components logic)
 ```
 
 **Future: Direct Database Connection**:
-- R connects directly to Oracle 26ai database
+- React connects to backend API with Oracle 26ai
 - Uses ROracle or DBI + odbc packages
 - Eliminates CSV intermediate step
 - Enables real-time report generation
 
 **Relevant Agents**:
 - Backend Python Developer (export endpoint)
-- R Performance Expert (R integration)
+- Frontend Developer (React integration)
 - Integration Architect (format specification)
 - Data Architect (data transformation)
 - Data Quality Engineer (export validation)
 
 ---
 
-### Integration Point 3: perfcollector2 → automated-Reporting (Direct)
+### Integration Point 3: perfcollector2 → perf-dashboard (Direct)
 
 **Purpose**: Bypass portal for development, testing, or standalone deployments
 
@@ -977,8 +960,8 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 1. Run `pcc` in local mode → generates JSON
 2. Run `pcprocess` → converts JSON to CSV
 3. Place CSV in `testData/proc/` or custom directory
-4. Update `reporting.Rmd` configuration
-5. Run `rmarkdown::render("reporting.Rmd")`
+4. Update `React components` configuration
+5. Run `vite::render("React components")`
 
 **Advantages**:
 - No network dependency
@@ -1000,7 +983,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 
 **Relevant Agents**:
 - Go Backend Developer (CSV format)
-- R Performance Expert (CSV consumption)
+- Frontend Developer (CSV consumption)
 - Integration Architect (workflow design)
 
 ---
@@ -1114,7 +1097,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
   - Error notification systems
   - Workflow documentation
 - **Typical Tasks**:
-  - "Create CLI wrapper for reporting.Rmd"
+  - "Create CLI wrapper for React components"
   - "Design automated upload pipeline"
   - "Implement systemd timer for pcc collection"
 
@@ -1135,7 +1118,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
   - Validate configuration files
   - Machine inventory management
 - **Typical Tasks**:
-  - "Replace hardcoded values in reporting.Rmd with YAML config"
+  - "Replace hardcoded values in React components with YAML config"
   - "Design secure API key storage"
   - "Create machine inventory system"
 
@@ -1164,27 +1147,27 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 
 ### Performance (1 agent)
 
-#### 8. R Performance Expert
+#### 8. Frontend Developer
 - **File**: `agents/performance/r-performance-expert.md`
-- **Component**: automated-Reporting
+- **Component**: perf-dashboard
 - **Expertise**:
-  - R optimization and profiling
+  - React optimization and profiling
   - Vectorization techniques
-  - data.table vs data.frame
-  - ggplot2 visualization
-  - R Markdown best practices
+  - React Query vs TypeScript interface
+  - Chart.js visualization
+  - React best practices
   - Memory management
   - Parallel processing
 - **Key Responsibilities**:
-  - Optimize slow R code
+  - Optimize slow React/TypeScript code
   - Design efficient visualizations
-  - Implement data.table operations
-  - Profile code with profvis
+  - Implement React Query operations
+  - Profile code with React DevTools
   - Cache expensive computations
 - **Typical Tasks**:
-  - "Optimize this data.frame operation processing 100K rows"
-  - "Convert dplyr code to data.table"
-  - "Profile reporting.Rmd and identify bottlenecks"
+  - "Optimize this TypeScript interface operation processing 100K rows"
+  - "Convert lodash code to React Query"
+  - "Profile React components and identify bottlenecks"
 
 ---
 
@@ -1236,7 +1219,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 
 #### 11. Oracle Developer
 - **File**: `agents/database/agent-oracle-developer.md`
-- **Component**: automated-Reporting (future)
+- **Component**: perf-dashboard (future)
 - **Expertise**:
   - PL/SQL programming
   - Oracle 26ai features
@@ -1251,7 +1234,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
   - Design Oracle schemas
   - Connection pooling
 - **Typical Tasks**:
-  - "Implement R connection to Oracle 26ai"
+  - "Implement API connection to Oracle 26ai"
   - "Design stored procedure for metric aggregation"
   - "Optimize Oracle query for reporting"
 
@@ -1385,9 +1368,9 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Go programming** | Go Backend Developer | Linux Systems Engineer, Data Quality Engineer |
 | **Python/Django** | Backend Python Developer | Django Tenants Specialist, Security Architect |
 | **django-tenants** | Django Tenants Specialist | Backend Python Developer, Data Architect |
-| **R/R Markdown** | R Performance Expert | Data Architect, Time-Series Architect |
+| **React/TypeScript** | Frontend Developer | Data Architect, Time-Series Architect |
 | **PostgreSQL** | Data Architect | Django Tenants Specialist, Time-Series Architect |
-| **Oracle 26ai** | Oracle Developer | Data Architect, R Performance Expert |
+| **Oracle 26ai** | Oracle Developer | Data Architect, Frontend Developer |
 | **Linux /proc** | Linux Systems Engineer | Go Backend Developer, Data Quality Engineer |
 | **Azure deployment** | DevOps Engineer | Solutions Architect, Security Architect |
 | **Docker** | DevOps Engineer | Solutions Architect |
@@ -1397,7 +1380,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Data validation** | Data Quality Engineer | Component-specific agents |
 | **Automation/CLI** | Automation Engineer | Configuration Management Specialist |
 | **Time-series DB** | Time-Series Architect | Data Architect |
-| **ggplot2/charts** | R Performance Expert | - |
+| **Chart.js/charts** | Frontend Developer | - |
 | **Workflow orchestration** | Automation Engineer | Integration Architect |
 | **Multi-tenancy** | Django Tenants Specialist | Security Architect |
 | **Browser debugging** | Backend Python Developer | DevOps Engineer (use **chrome-devtools** MCP) |
@@ -1415,7 +1398,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Optimize Go code** | Go Backend Developer | - | "Reduce memory usage in pcprocess" |
 | **Implement upload** | Integration Architect | Go Backend Developer, Backend Python Developer, Security Architect | "Implement CSV upload to portal" |
 | **Fix multi-tenancy bug** | Django Tenants Specialist | Backend Python Developer | "Fix cross-tenant data leak" |
-| **Optimize R report** | R Performance Expert | Data Architect | "Speed up 100K row processing" |
+| **Optimize dashboard** | Frontend Developer | Data Architect | "Speed up 100K row rendering" |
 | **Design database schema** | Data Architect | Time-Series Architect, Django Tenants Specialist | "Design schema for metrics" |
 | **Set up authentication** | Security Architect | Backend Python Developer, Go Backend Developer | "Implement API key auth" |
 | **Deploy to production** | DevOps Engineer | Solutions Architect, Security Architect | "Deploy XATbackend to Azure" |
@@ -1424,7 +1407,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Design REST API** | API Architect | Integration Architect, Security Architect | "Design export API" |
 | **Configure automation** | Automation Engineer | Configuration Management Specialist | "Set up cron for collection" |
 | **Troubleshoot integration** | Integration Architect | All component agents | "Data not appearing in reports" |
-| **Plan Oracle migration** | Oracle Developer | Data Architect, R Performance Expert | "Migrate from CSV to Oracle" |
+| **Plan Oracle migration** | Oracle Developer | Data Architect, Frontend Developer | "Migrate from CSV to Oracle" |
 | **Design partitioning** | Time-Series Architect | Data Architect | "Partition by month" |
 | **Architect system** | Solutions Architect | Integration Architect, Security Architect | "Design for 1000 machines" |
 | **Debug frontend UI** | Backend Python Developer | DevOps Engineer | "UI not updating after API call" (use chrome-devtools MCP) |
@@ -1449,11 +1432,11 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **XATbackend** | Database schema | Data Architect | Django Tenants Specialist, Time-Series Architect |
 | **XATbackend** | Deploy to Azure | DevOps Engineer | Solutions Architect |
 | **XATbackend** | Security | Security Architect | Django Tenants Specialist |
-| **automated-Reporting** | Optimize R code | R Performance Expert | - |
-| **automated-Reporting** | Add visualizations | R Performance Expert | Data Architect |
-| **automated-Reporting** | Oracle integration | Oracle Developer | R Performance Expert, Data Architect |
-| **automated-Reporting** | CLI interface | Automation Engineer | R Performance Expert |
-| **automated-Reporting** | Configuration | Configuration Management Specialist | R Performance Expert |
+| **perf-dashboard** | Optimize React/TypeScript code | Frontend Developer | - |
+| **perf-dashboard** | Add visualizations | Frontend Developer | Data Architect |
+| **perf-dashboard** | Oracle integration | Oracle Developer | Frontend Developer, Data Architect |
+| **perf-dashboard** | CLI interface | Automation Engineer | Frontend Developer |
+| **perf-dashboard** | Configuration | Configuration Management Specialist | Frontend Developer |
 | **All components** | Integration | Integration Architect | Component-specific agents |
 | **All components** | API design | API Architect | Integration Architect, Security Architect |
 | **All components** | Security | Security Architect | Component-specific agents |
@@ -1470,7 +1453,7 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
 | **Slow data collection** | pcc taking too long | Go Backend Developer | Linux Systems Engineer | 1. Profile Go code 2. Check /proc read latency 3. Optimize parsing |
 | **Upload failures** | CSV not reaching portal | Integration Architect | Go Backend Developer, Backend Python Developer | 1. Check network 2. Validate auth 3. Check logs 4. Verify endpoint |
 | **Cross-tenant data leak** | User sees other tenant data | Django Tenants Specialist | Security Architect | 1. Audit queries 2. Check tenant context 3. Review middleware |
-| **Slow R reports** | reporting.Rmd takes minutes | R Performance Expert | Data Architect | 1. Profile with profvis 2. Check data.frame vs data.table 3. Optimize I/O |
+| **Slow dashboard** | Dashboard takes too long to load | Frontend Developer | Data Architect | 1. Profile with React DevTools 2. Check data fetching 3. Optimize rendering |
 | **Database performance** | Queries timeout | Data Architect | Time-Series Architect | 1. EXPLAIN query 2. Check indexes 3. Review partitioning |
 | **API errors** | 400/500 responses | API Architect | Integration Architect, Backend Python Developer | 1. Check request format 2. Review validation 3. Check logs |
 | **Security vulnerability** | Potential exploit | Security Architect | Component-specific agents | 1. Audit code 2. Run security scan 3. Review auth |
@@ -1525,12 +1508,12 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
    - Deliverable: Multi-tenant configuration, middleware, domain routing
 
 9. **Integration Architect**: Design and test data flow
-   - "Integration Architect: Design the complete data flow from pcc collection through XATbackend storage to automated-Reporting visualization."
+   - "Integration Architect: Design the complete data flow from pcc collection through XATbackend storage to perf-dashboard visualization."
    - Deliverable: Integration documentation, test plan, validation scripts
 
-10. **R Performance Expert**: Set up reporting
-    - "R Performance Expert: Configure automated-Reporting to consume data from XATbackend and generate performance reports."
-    - Deliverable: Configured reporting.Rmd, sample reports, documentation
+10. **Frontend Developer**: Set up reporting
+    - "Frontend Developer: Configure perf-dashboard to consume data from XATbackend and generate performance reports."
+    - Deliverable: Configured React components, sample reports, documentation
 
 11. **Automation Engineer**: Implement automation
     - "Automation Engineer: Create systemd timers for pcc collection, upload workflows, and scheduled reporting."
@@ -1636,8 +1619,8 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
    - "Go Backend Developer: Run pcprocess to convert JSON collection to CSV format."
    - Deliverable: CSV file with standardized columns
 
-2. **R Performance Expert**: Configure and run report
-   - "R Performance Expert: Configure reporting.Rmd for the machine and generate HTML report."
+2. **Frontend Developer**: Configure and run report
+   - "Frontend Developer: Configure React components for the machine and generate HTML report."
    - Deliverable: HTML performance report
 
 #### Option B: From XATbackend (Production)
@@ -1650,8 +1633,8 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
    - "Data Quality Engineer: Validate the exported CSV for completeness, correctness, and data quality."
    - Deliverable: Validation report, quality score
 
-3. **R Performance Expert**: Generate report
-   - "R Performance Expert: Load the exported CSV and generate comprehensive performance report with time-series analysis, percentiles, and visualizations."
+3. **Frontend Developer**: Generate report
+   - "Frontend Developer: Load the exported CSV and generate comprehensive performance report with time-series analysis, percentiles, and visualizations."
    - Deliverable: HTML/PDF report with analysis
 
 4. **Integration Architect**: Publish report to portal (future)
@@ -1694,8 +1677,8 @@ data$timestamp <- as.POSIXct(data$timestamp, origin="1970-01-01")
    - "Data Quality Engineer: Validate that stored data meets quality requirements and has no corruption."
    - Deliverable: Quality report, anomaly detection
 
-7. **R Performance Expert**: Verify report data source
-   - "R Performance Expert: Confirm that reporting.Rmd is reading from the correct data source and processing it correctly."
+7. **Frontend Developer**: Verify report data source
+   - "Frontend Developer: Confirm that React components is reading from the correct data source and processing it correctly."
    - Deliverable: Data source verification, sample data check
 
 8. **Integration Architect**: Resolve and document
@@ -1857,83 +1840,68 @@ DELETE /api/v1/auth/token             # Revoke API token
 
 ---
 
-### automated-Reporting Technology Stack
+### perf-dashboard Technology Stack
 
-**Core Language**: R 4.5.2+
+**Core Language**: React 18+
 
-**Why R?**
-- Statistical analysis: Built for data analysis
-- Visualization: ggplot2 is best-in-class
-- R Markdown: Literate programming for reports
-- Packages: 19,000+ CRAN packages
-- Reproducibility: renv for environment management
-- PDF/HTML: Easy report generation
+**Why React?**
+- Component-based: Reusable UI components
+- Visualization: Chart.js and Recharts are best-in-class
+- Ecosystem: Large npm package ecosystem
+- TypeScript: Type safety and better DX
+- Vite: Fast development and build tooling
+- Interactive: Real-time updates and interactivity
 
-**Core Packages**:
-```r
-ggplot2 (>= 3.4.0)      # Data visualization
-dplyr (>= 1.1.0)        # Data manipulation
-lubridate (>= 1.9.0)    # Date/time handling
-fmsb (>= 0.7.6)         # Radar charts
-knitr (>= 1.45)         # Report knitting
-rmarkdown (>= 2.20)     # Report rendering
+**Core Packages** (package.json):
+```json
+"react": "^18.2.0",           // UI framework
+"chart.js": "^4.5.1",         // Data visualization
+"recharts": "^2.10.0",        // Additional charts
+"@tanstack/react-query": "^5.17.9",  // Data fetching
+"date-fns": "^3.6.0",         // Date/time handling
+"axios": "^1.6.5",            // HTTP client
+"zustand": "^4.4.0"           // State management
 ```
 
-**Performance Packages** (Recommended):
-```r
-data.table (>= 1.14.0)  # High-performance data manipulation (10-100x faster)
-profvis (>= 0.3.0)      # Code profiling
-Rcpp (>= 1.0.0)         # C++ integration for speed
+**Development Tools**:
+```json
+"vite": "^5.0.0",             // Build tool
+"typescript": "^5.3.0",       // Type checking
+"tailwindcss": "^3.4.0",      // Styling
+"eslint": "^8.56.0"           // Linting
 ```
 
-**Future Packages** (Oracle Integration):
-```r
-ROracle (>= 1.3.0)      # Oracle database connector
-DBI (>= 1.1.0)          # Database interface
-odbc (>= 1.3.0)         # Alternative Oracle connector
-yaml (>= 2.3.0)         # YAML configuration
-assertr (>= 3.0.0)      # Data validation
-```
+**Dashboard Structure** (perf-dashboard):
 
-**Report Structure** (reporting.Rmd - 2,039 lines):
+1. **Pages** (src/pages/):
+   - Home.tsx - Dashboard overview
+   - LiveView.tsx - Real-time monitoring
+   - Compare.tsx - Benchmark comparison
+   - Replay.tsx - Historical playback
 
-1. **Setup Section** (Lines 1-50):
-   - Library loading
-   - Configuration (NEEDS YAML REPLACEMENT)
-   - Helper functions
-   - Theme definitions
+2. **Components** (src/components/):
+   - charts/ - Chart.js and Recharts components
+   - layout/ - Sidebar, Header, Layout
+   - home/ - Dashboard widgets
 
-2. **Data Loading** (Lines 51-200):
-   - Read /proc/stat (CPU)
-   - Read /proc/meminfo (Memory)
-   - Read /proc/diskstats (Disk)
-   - Read /proc/net/dev (Network)
-   - Timestamp parsing and alignment
+3. **API Layer** (src/api/):
+   - trickle.ts - Trickle session API
+   - performance.ts - Performance data API
+   - auth.ts - Authentication API
 
-3. **Data Processing** (Lines 201-500):
-   - CPU calculations (percentages, per-core)
-   - Memory calculations (used, available, buffers, cache)
-   - Disk calculations (IOPS, throughput)
-   - Network calculations (Mbps, packet rate)
-   - Percentile calculations (95th, 97.5th, 99th, 100th)
+4. **State Management** (src/store/):
+   - authStore.ts - Authentication state
+   - settingsStore.ts - User preferences
 
-4. **Visualizations** (Lines 501-1500):
-   - Time-series line charts (ggplot2)
-   - Faceted charts (per-CPU, per-device)
-   - Radar charts (fmsb)
-   - Summary tables (knitr::kable)
-   - Custom themes and colors
-
-5. **Summary Section** (Lines 1501-2039):
-   - Executive summary
-   - Key metrics
-   - Recommendations
+5. **Hooks** (src/hooks/):
+   - useAuth.ts - Authentication hook
+   - usePccBenchmarks.ts - Benchmark data hook
    - Machine metadata
    - Report generation timestamp
 
 **Hardcoded Configuration** (CRITICAL ISSUE):
 ```r
-# Lines 24-30 in reporting.Rmd
+# Lines 24-30 in React components
 storeVol <- "sda"              # MUST MATCH ACTUAL DISK
 netIface <- "ens33"            # MUST MATCH ACTUAL INTERFACE
 machName <- "machine001"       # MUST BE UNIQUE
@@ -1955,23 +1923,24 @@ machine:
 **Report Generation**:
 ```bash
 # HTML output (recommended)
-Rscript -e "rmarkdown::render('reporting.Rmd', output_format='html_document')"
+# Development mode
+npm run dev
 
-# PDF output (requires LaTeX)
-Rscript -e "rmarkdown::render('reporting.Rmd', output_format='pdf_document')"
+# Production build
+npm run build
 
-# Both formats
-Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
+# Preview production build
+npm run preview
 ```
 
 **Performance Optimization Opportunities**:
-- Replace data.frame with data.table (10-100x speedup)
+- Replace TypeScript interface with React Query (10-100x speedup)
 - Vectorize loops (if any remain)
 - Pre-allocate vectors
 - Cache expensive computations
-- Use profvis to identify bottlenecks
+- Use React DevTools to identify bottlenecks
 
-**Relevant Agents**: R Performance Expert, Data Architect, Configuration Management Specialist, Automation Engineer
+**Relevant Agents**: Frontend Developer, Data Architect, Configuration Management Specialist, Automation Engineer
 
 ---
 
@@ -2063,16 +2032,16 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
 │   ├── Dockerfile                     # Container definition
 │   └── docker-compose.yml             # Local development stack
 │
-├── automated-Reporting/               # R-based visualization (SUBMODULE)
+├── perf-dashboard/               # React-based visualization (SUBMODULE)
 │   ├── claude.md                      # Component-specific guide (669 lines)
 │   ├── README.md                      # User documentation
 │   ├── ORACLE_INTEGRATION_GUIDE.md    # Oracle migration roadmap
 │   ├── QUICKSTART_ORACLE.md           # 30-minute Oracle setup
 │   │
-│   ├── reporting.Rmd                  # Main report template (2,039 lines)
-│   ├── DESCRIPTION                    # R package dependencies
-│   ├── renv_init.R                    # Environment setup
-│   ├── .gitignore                     # R artifacts
+│   ├── React components                  # Main report template (2,039 lines)
+│   ├── DESCRIPTION                    # npm package dependencies
+│   ├── vite.config.ts                # Vite configuration
+│   ├── .gitignore                     # Build artifacts
 │   │
 │   ├── testData/                      # Sample data
 │   │   └── proc/                      # Linux /proc format
@@ -2097,7 +2066,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
 │   │       ├── migrations/            # Schema versioning
 │   │       └── queries/               # SQL queries
 │   │
-│   ├── R/                             # R modules (Phase 2)
+│   ├── src/                           # React source code
 │   │   └── database/
 │   │       ├── oracle_connection.R
 │   │       ├── data_loader.R
@@ -2463,53 +2432,53 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
 
 ---
 
-### Workflow 3: automated-Reporting Development
+### Workflow 3: perf-dashboard Development
 
 **Scenario**: Optimizing slow report generation
 
 **Steps**:
 
-1. **Profile Code** (R Performance Expert):
+1. **Profile Code** (Frontend Developer):
    ```r
-   # Install profvis if not already installed
-   install.packages("profvis")
+   # Install React DevTools if not already installed
+   install.packages("React DevTools")
 
    # Profile the report
-   library(profvis)
-   profvis({
-       rmarkdown::render("reporting.Rmd", output_format = "html_document")
+   library(React DevTools)
+   React DevTools({
+       vite::render("React components", output_format = "html_document")
    })
 
    # This will open an interactive profiling visualization
    # Look for functions taking the most time
    ```
 
-2. **Identify Bottlenecks** (R Performance Expert):
+2. **Identify Bottlenecks** (Frontend Developer):
    ```
-   "As the R Performance Expert, based on the profvis output, identify the
-   top 3 bottlenecks in reporting.Rmd and recommend optimization strategies."
+   "As the Frontend Developer, based on the React DevTools output, identify the
+   top 3 bottlenecks in React components and recommend optimization strategies."
    ```
 
    Typical findings:
-   - data.frame operations on large datasets → use data.table
+   - TypeScript interface operations on large datasets → use React Query
    - Loops over rows → vectorize
    - Repeated file I/O → cache data
    - Large object copies → use in-place modification
 
-3. **Optimize Data Loading** (R Performance Expert):
+3. **Optimize Data Loading** (Frontend Developer):
    ```r
    # BEFORE (slow)
    cpu_data <- read.csv("data/cpu.csv", stringsAsFactors = FALSE)
 
-   # AFTER (faster with data.table)
-   library(data.table)
+   # AFTER (faster with React Query)
+   library(React Query)
    cpu_data <- fread("data/cpu.csv")
    ```
 
-4. **Optimize Data Manipulation** (R Performance Expert):
+4. **Optimize Data Manipulation** (Frontend Developer):
    ```r
-   # BEFORE (slow - data.frame)
-   library(dplyr)
+   # BEFORE (slow - TypeScript interface)
+   library(lodash)
    cpu_summary <- cpu_data %>%
        group_by(timestamp) %>%
        summarise(
@@ -2518,9 +2487,9 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
            avg_idle = mean(cpu_idle)
        )
 
-   # AFTER (fast - data.table)
-   library(data.table)
-   setDT(cpu_data)  # Convert to data.table in-place
+   # AFTER (fast - React Query)
+   library(React Query)
+   setDT(cpu_data)  # Convert to React Query in-place
    cpu_summary <- cpu_data[, .(
        avg_user = mean(cpu_user),
        avg_system = mean(cpu_system),
@@ -2530,7 +2499,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    # Speedup: 10-100x for large datasets
    ```
 
-5. **Optimize Loops** (R Performance Expert):
+5. **Optimize Loops** (Frontend Developer):
    ```r
    # BEFORE (slow - loop)
    cpu_pct <- numeric(nrow(cpu_data))
@@ -2544,7 +2513,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    # Speedup: 100-1000x
    ```
 
-6. **Optimize Visualization** (R Performance Expert):
+6. **Optimize Visualization** (Frontend Developer):
    ```r
    # For very large datasets, downsample before plotting
    # BEFORE (slow - plot all 86400 points for 24h at 1s intervals)
@@ -2552,7 +2521,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
        geom_line()
 
    # AFTER (fast - downsample to 1000 points)
-   library(dplyr)
+   library(lodash)
    cpu_data_sampled <- cpu_data %>%
        mutate(group = ntile(row_number(), 1000)) %>%
        group_by(group) %>%
@@ -2567,9 +2536,9 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    # Speedup: 10-50x rendering time
    ```
 
-7. **Cache Expensive Computations** (R Performance Expert):
+7. **Cache Expensive Computations** (Frontend Developer):
    ```r
-   # Use R Markdown caching for expensive chunks
+   # Use React caching for expensive chunks
    ```{r load-data, cache=TRUE}
    # This chunk will only run if code changes
    cpu_data <- fread("data/cpu.csv")
@@ -2583,7 +2552,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    ```
    ```
 
-8. **Benchmark Improvements** (R Performance Expert):
+8. **Benchmark Improvements** (Frontend Developer):
    ```r
    library(microbenchmark)
 
@@ -2599,13 +2568,13 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    )
    ```
 
-9. **Document Optimizations** (R Performance Expert):
+9. **Document Optimizations** (Frontend Developer):
    ```
-   Add comments in reporting.Rmd explaining optimizations and expected
+   Add comments in React components explaining optimizations and expected
    performance characteristics.
    ```
 
-**Relevant Agents**: R Performance Expert, Data Architect
+**Relevant Agents**: Frontend Developer, Data Architect
 
 ---
 
@@ -2619,7 +2588,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    ```
    "As the Integration Architect, create a comprehensive test plan for the
    end-to-end data flow from pcc collection through XATbackend storage to
-   automated-Reporting visualization."
+   perf-dashboard visualization."
    ```
 
 2. **Stage 1: Collection Test** (Go Backend Developer):
@@ -2686,13 +2655,13 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    wc -l exported.csv  # Should show ~300 rows + header
    ```
 
-7. **Stage 6: Report Generation Test** (R Performance Expert):
+7. **Stage 6: Report Generation Test** (Frontend Developer):
    ```r
-   # Update reporting.Rmd configuration
+   # Update React components configuration
    # Set loc <- "path/to/exported.csv"
 
    # Generate report
-   rmarkdown::render("reporting.Rmd", output_format = "html_document")
+   vite::render("React components", output_format = "html_document")
 
    # Verify report exists
    file.exists("reporting.html")  # Should be TRUE
@@ -2717,7 +2686,7 @@ Rscript -e "rmarkdown::render('reporting.Rmd', output_format='all')"
    - Recommendations for improvements
    ```
 
-**Relevant Agents**: Integration Architect, Go Backend Developer, Backend Python Developer, R Performance Expert
+**Relevant Agents**: Integration Architect, Go Backend Developer, Backend Python Developer, Frontend Developer
 
 ---
 
@@ -2794,8 +2763,8 @@ backoff for the upload client."
 "As the Backend Python Developer, create a Django view for the upload
 endpoint with proper error handling."
 
-✅ FOR R CODE:
-"As the R Performance Expert, convert this dplyr code to data.table for
+✅ FOR REACT CODE:
+"As the Frontend Developer, convert this lodash code to React Query for
 better performance."
 ```
 
@@ -2816,8 +2785,8 @@ and authorization system for the multi-tenant upload API ensuring tenant
 isolation and API key security."
 
 ✅ COMPLEX TASK - PERFORMANCE:
-"R Performance Expert and Data Architect: Optimize the report generation
-for 1 million rows of performance data, considering both R code optimization
+"Frontend Developer and Data Architect: Optimize the report generation
+for 1 million rows of performance data, considering both React/TypeScript code optimization
 and database pre-aggregation."
 
 ✅ COMPLEX TASK - DEPLOYMENT:
@@ -2838,12 +2807,12 @@ disaster recovery, and security best practices."
 
 ```
 ❌ INSUFFICIENT CONTEXT:
-"Optimize this R code."
+"Optimize this React/TypeScript code."
 
 ✅ SUFFICIENT CONTEXT:
-"As the R Performance Expert: This R code processes 100K rows of CPU metrics
-with 10 numeric columns. It currently takes 30 seconds using data.frame and
-dplyr. The code groups by timestamp and calculates mean, median, and
+"As the Frontend Developer: This React/TypeScript code processes 100K rows of CPU metrics
+with 10 numeric columns. It currently takes 30 seconds using TypeScript interface and
+lodash. The code groups by timestamp and calculates mean, median, and
 percentiles. How can I optimize this to run in under 5 seconds?"
 ```
 
@@ -2896,14 +2865,14 @@ metrics with 1-second granularity and 30-day retention. Provide:
   - Validate all inputs
   - Use Django's security features (CSRF, XSS protection)
 
-#### R (automated-Reporting)
-- **Agent**: R Performance Expert
+#### React (perf-dashboard)
+- **Agent**: Frontend Developer
 - **Best Practices**:
-  - Use data.table for large datasets
+  - Use React Query for large datasets
   - Vectorize operations (avoid loops)
-  - Cache expensive R Markdown chunks
+  - Cache expensive React chunks
   - Pre-allocate vectors
-  - Profile with profvis before optimizing
+  - Profile with React DevTools before optimizing
 
 ---
 
@@ -2939,7 +2908,7 @@ metrics with 1-second granularity and 30-day retention. Provide:
 4. Django upload endpoint failure (invalid CSV, auth, tenant)
 5. Database storage and retrieval
 6. CSV export for reporting
-7. R report generation from exported data
+7. React dashboard rendering of exported data
 
 Include expected inputs, outputs, and error messages for each scenario."
 ```
@@ -3150,26 +3119,26 @@ These protocols are **MANDATORY** for all agents when debugging web application 
 
 ---
 
-### Problem: "R report generation is very slow"
+### Problem: "Dashboard rendering is very slow"
 
 **Symptoms**:
-- reporting.Rmd takes 5+ minutes
+- React components takes 5+ minutes
 - High CPU usage during rendering
 - Large memory consumption
 
 **Troubleshooting Workflow**:
 
-1. **R Performance Expert**: Profile the code
+1. **Frontend Developer**: Profile the code
    ```r
-   library(profvis)
-   profvis({
-       rmarkdown::render("reporting.Rmd")
+   library(React DevTools)
+   React DevTools({
+       vite::render("React components")
    })
    ```
 
-2. **R Performance Expert**: Identify bottlenecks
+2. **Frontend Developer**: Identify bottlenecks
    ```
-   "As the R Performance Expert, based on the profvis output, what are the
+   "As the Frontend Developer, based on the React DevTools output, what are the
    top 3 performance bottlenecks and what optimization strategies do you
    recommend?"
    ```
@@ -3177,26 +3146,26 @@ These protocols are **MANDATORY** for all agents when debugging web application 
 3. **Data Architect**: Consider database pre-aggregation
    ```
    "As the Data Architect, should we pre-aggregate metrics in the database
-   before exporting to R? What aggregation strategy would reduce R processing
+   before sending to frontend? What aggregation strategy would reduce frontend processing
    time?"
    ```
 
-4. **R Performance Expert**: Optimize identified bottlenecks
+4. **Frontend Developer**: Optimize identified bottlenecks
    ```
-   "As the R Performance Expert, convert the slow data.frame operations to
-   data.table and implement the optimization strategies identified."
+   "As the Frontend Developer, convert the slow TypeScript interface operations to
+   React Query and implement the optimization strategies identified."
    ```
 
 **Common Causes**:
-- ❌ Using data.frame instead of data.table
+- ❌ Using TypeScript interface instead of React Query
 - ❌ Loops instead of vectorized operations
 - ❌ Reading CSV multiple times
-- ❌ No caching in R Markdown chunks
+- ❌ No caching in React chunks
 - ❌ Large object copies
-- ❌ Inefficient ggplot2 rendering
+- ❌ Inefficient Chart.js rendering
 
 **Common Fixes**:
-- ✅ Use data.table: 10-100x speedup
+- ✅ Use React Query: 10-100x speedup
 - ✅ Vectorize operations: 100-1000x speedup
 - ✅ Cache expensive chunks: Eliminate redundant computation
 - ✅ Downsample before plotting: 10-50x rendering speedup
@@ -3390,7 +3359,7 @@ and what deployment environments are supported?"
 **Then**: Component-specific agents based on your role
 - Go development → Go Backend Developer
 - Django development → Backend Python Developer
-- R development → R Performance Expert
+- React development → Frontend Developer
 - DevOps → DevOps Engineer
 
 ---
@@ -3446,21 +3415,21 @@ data by tenant."
 
 ---
 
-### Path 4: I'm Working on automated-Reporting
+### Path 4: I'm Working on perf-dashboard
 
 **Primary Agent**:
-- R Performance Expert
+- Frontend Developer
 
 **Typical Questions**:
 
 ```
-"R Performance Expert: Optimize this data.frame operation that's processing
+"Frontend Developer: Optimize this TypeScript interface operation that's processing
 100K rows and taking 2 minutes."
 
-"R Performance Expert: Convert this dplyr code to data.table for better
+"Frontend Developer: Convert this lodash code to React Query for better
 performance."
 
-"R Performance Expert: Add a new visualization showing disk I/O patterns
+"Frontend Developer: Add a new visualization showing disk I/O patterns
 over time."
 ```
 
@@ -3538,7 +3507,7 @@ PerfAnalysis/               # Parent repository
 ├── XATbackend/             # Submodule (separate repo)
 │   └── .git/               # Submodule git
 │
-├── automated-Reporting/    # Submodule (separate repo)
+├── perf-dashboard/    # Submodule (separate repo)
 │   └── .git/               # Submodule git
 │
 └── claude-agents/          # Submodule (separate repo)
@@ -3596,7 +3565,7 @@ git push
 - Compiled binaries (perfcollector2/bin/)
 - Generated reports (*.html, *.pdf)
 - Data files (*.csv, *.json collections)
-- Virtual environments (Python venv, R renv cache)
+- Virtual environments (Python venv, node_modules)
 - API keys or secrets
 - IDE configuration (.vscode/, .idea/)
 
@@ -3623,14 +3592,14 @@ media/
 venv/
 ```
 
-**automated-Reporting/.gitignore**:
+**perf-dashboard/.gitignore**:
 ```
 *.html
 *.pdf
 *.tex
 .RData
 .Rhistory
-renv/library/
+node_modules/
 reporting.log
 ```
 
@@ -3697,24 +3666,17 @@ AZURE_CONTAINER=static
 
 ---
 
-### automated-Reporting (R)
+### perf-dashboard (React)
 
-**R Environment**:
+**Node Environment**:
 ```bash
-R_HOME=/usr/lib/R                  # R installation path
-R_LIBS_USER=~/R/library            # User package library
+NODE_ENV=development               # Environment mode
+VITE_API_URL=http://localhost:8000 # Backend API URL
+VITE_WS_URL=ws://localhost:8000    # WebSocket URL (future)
 
-# Report configuration (planned)
-REPORT_CONFIG=/etc/perfmon/config.yaml  # Configuration file
-REPORT_OUTPUT_DIR=/var/www/reports      # Output directory
-REPORT_FORMAT=html                      # Output format: html, pdf, both
-
-# Oracle connection (future)
-ORACLE_HOST=localhost
-ORACLE_PORT=1521
-ORACLE_SERVICE=FREEPDB1
-ORACLE_USER=perf_report_user
-ORACLE_PASSWORD=<secure-password>
+# Build configuration
+BUILD_PATH=dist                    # Build output directory
+PORT=3000                          # Dev server port
 ```
 
 ---
@@ -3733,11 +3695,12 @@ ORACLE_PASSWORD=<secure-password>
 - [django-tenants Documentation](https://django-tenants.readthedocs.io/)
 - [Django REST Framework](https://www.django-rest-framework.org/)
 
-**R**:
-- [R Project](https://www.r-project.org/)
-- [R Markdown](https://rmarkdown.rstudio.com/)
-- [ggplot2](https://ggplot2.tidyverse.org/)
-- [data.table](https://rdatatable.gitlab.io/data.table/)
+**React/Frontend**:
+- [React Documentation](https://react.dev/)
+- [Vite](https://vitejs.dev/)
+- [Chart.js](https://www.chartjs.org/)
+- [React Query](https://tanstack.com/query/latest)
+- [Tailwind CSS](https://tailwindcss.com/)
 
 **Databases**:
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/12/)
@@ -3762,11 +3725,11 @@ ORACLE_PASSWORD=<secure-password>
 - `XATbackend/README.md` - Django app documentation
 - `XATbackend/docs/` - Additional documentation (if exists)
 
-**automated-Reporting**:
-- `automated-Reporting/claude.md` - Component-specific guide (669 lines)
-- `automated-Reporting/README.md` - User documentation
-- `automated-Reporting/ORACLE_INTEGRATION_GUIDE.md` - Oracle migration plan
-- `automated-Reporting/QUICKSTART_ORACLE.md` - Quick setup guide
+**perf-dashboard**:
+- `perf-dashboard/claude.md` - Component-specific guide (669 lines)
+- `perf-dashboard/README.md` - User documentation
+- `perf-dashboard/ORACLE_INTEGRATION_GUIDE.md` - Oracle migration plan
+- `perf-dashboard/QUICKSTART_ORACLE.md` - Quick setup guide
 
 ### Agent Files
 
@@ -3834,7 +3797,7 @@ All 16 agents are located in `/Users/danmcdougal/projects/PerfAnalysis/agents/`:
 - **New to project?** → Integration Architect
 - **Working on Go code?** → Go Backend Developer
 - **Working on Django code?** → Backend Python Developer
-- **Working on R code?** → R Performance Expert
+- **Working on React/TypeScript code?** → Frontend Developer
 - **Working across components?** → Integration Architect
 - **Security question?** → Security Architect
 - **Deployment question?** → DevOps Engineer
