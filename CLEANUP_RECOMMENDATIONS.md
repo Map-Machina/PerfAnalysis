@@ -484,11 +484,11 @@ Layer 4: Database query cache (frequent queries)
 
 **Focus**: Critical documentation and deprecation notices
 
-- [ ] Add XATbackend deprecation notices
-- [ ] Consolidate agent definitions
-- [ ] Update root README.md
-- [ ] Clean up environment files
-- [ ] Create docs/ directory structure
+- [x] Add XATbackend deprecation notices *(completed 2026-01-27)*
+- [x] Consolidate agent definitions *(completed 2026-01-27 - /agents/ is canonical source)*
+- [x] Update root README.md *(completed 2026-01-27)*
+- [x] Clean up environment files *(completed 2026-01-27 - docs/guides/ENVIRONMENT_SETUP.md)*
+- [x] Create docs/ directory structure *(completed 2026-01-27)*
 
 ### Phase 2: Code Quality (Week 3-4)
 
@@ -607,16 +607,16 @@ VITE_WS_URL=wss://api.example.com
 
 ## Appendix C: Quick Wins (< 1 hour each)
 
-1. Add deprecation notice to XATbackend README
-2. Create .pre-commit-config.yaml
-3. Add health check endpoint to XATSimplified
-4. Update root README with current architecture
-5. Run `npm audit fix` on perf-dashboard
-6. Run `pip-audit` on XATSimplified
-7. Add CODEOWNERS file
-8. Create issue templates for bug reports
-9. Add PR template
-10. Update .gitignore files
+1. ~~Add deprecation notice to XATbackend README~~ ✅ *(completed)*
+2. ~~Create .pre-commit-config.yaml~~ ✅ *(completed)*
+3. ~~Add health check endpoint to XATSimplified~~ ✅ *(completed)*
+4. ~~Update root README with current architecture~~ ✅ *(completed)*
+5. Run `npm audit fix` on perf-dashboard *(requires manual review - breaking changes)*
+6. Run `pip-audit` on XATSimplified *(pending)*
+7. ~~Add CODEOWNERS file~~ ✅ *(completed)*
+8. ~~Create issue templates for bug reports~~ ✅ *(completed)*
+9. ~~Add PR template~~ ✅ *(completed)*
+10. ~~Update .gitignore files~~ ✅ *(already configured)*
 
 ---
 
