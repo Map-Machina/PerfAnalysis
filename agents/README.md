@@ -1,5 +1,7 @@
 # PerfAnalysis Agents
 
+> ⚠️ **CANONICAL SOURCE**: This directory (`/agents/`) is the **single source of truth** for all agent definitions in the PerfAnalysis ecosystem. Agent directories in subfolders (XATbackend/agents, automated-Reporting/agents, OCI/agents, etc.) are deprecated and should not be modified.
+
 This directory contains specialized Claude AI agents for the **PerfAnalysis** integrated performance monitoring ecosystem.
 
 ## Quick Start
