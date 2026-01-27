@@ -17,7 +17,7 @@ PerfAnalysis is a complete, production-ready performance monitoring system that 
 - 📊 **Real-time Performance Monitoring**: Collect CPU, memory, disk, and network metrics
 - 🔐 **Multi-Tenant Architecture**: Complete data isolation for multiple organizations
 - 🌐 **Web-Based Portal**: User-friendly interface for managing collectors and data
-- 📈 **Automated Reporting**: R-based visualization and report generation
+- 📈 **Interactive Dashboards**: React-based visualization with real-time updates
 - 🔒 **Enterprise Security**: API authentication, RBAC, TLS encryption
 - 🐳 **Container-Native**: Docker-based deployment for all components
 
@@ -53,21 +53,23 @@ make health
 
 ```
 ┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
-│ perfcollector2  │────────▶│   XATbackend    │────────▶│   automated-    │
-│   (Go-based)    │  HTTP   │ (Django Portal) │  Export │   Reporting     │
-│                 │  POST   │                 │  CSV/API│   (R-based)     │
-│ DATA COLLECTION │         │ USER PORTAL     │         │ VISUALIZATION   │
+│ perfcollector2  │────────▶│  XATSimplified  │────────▶│  perf-dashboard │
+│   (Go-based)    │  HTTP   │ (Django 4.2 API)│  REST   │   (React 18)    │
+│                 │  POST   │                 │   API   │                 │
+│ DATA COLLECTION │         │ BACKEND API     │         │ VISUALIZATION   │
 └─────────────────┘         └─────────────────┘         └─────────────────┘
 ```
+
+> **Note**: XATbackend is deprecated. All production development uses **XATSimplified**.
 
 ### Components
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | **perfcollector2** | Go 1.24 | Collects metrics from Linux `/proc` filesystem |
-| **XATbackend** | Django 3.2 | Web portal, API, multi-tenant data management |
-| **automated-Reporting** | R 4.5 | Report generation and data visualization |
-| **PostgreSQL** | 12.2 | Multi-tenant data storage |
+| **XATSimplified** | Django 4.2.9 | REST API, multi-tenant data management |
+| **perf-dashboard** | React 18 | Interactive dashboards and visualization |
+| **PostgreSQL** | 12.2+ | Multi-tenant data storage |
 
 ---
 

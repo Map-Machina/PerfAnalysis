@@ -1,0 +1,33 @@
+# CODEOWNERS for PerfAnalysis
+# These owners will be automatically requested for review on PRs
+
+# Default owners for everything
+* @Dan-MapMachina
+
+# XATSimplified (Django backend)
+/XATSimplified/ @Dan-MapMachina
+
+# perf-dashboard (React frontend)
+/perf-dashboard/ @Dan-MapMachina
+
+# perfcollector2 (Go collector)
+/perfcollector2/ @Dan-MapMachina
+
+# Documentation
+*.md @Dan-MapMachina
+/docs/ @Dan-MapMachina
+
+# CI/CD and DevOps
+/.github/ @Dan-MapMachina
+/docker/ @Dan-MapMachina
+docker-compose*.yml @Dan-MapMachina
+Makefile @Dan-MapMachina
+
+# Configuration
+.pre-commit-config.yaml @Dan-MapMachina
+*.yaml @Dan-MapMachina
+*.yml @Dan-MapMachina
+
+# Agent definitions
+/agents/ @Dan-MapMachina
+/claude-agents/ @Dan-MapMachina
